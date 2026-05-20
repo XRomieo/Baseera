@@ -1,0 +1,11 @@
+product_id,product_name,category,unit_size,stock_units,warehouse_location,last_updated,batch_id,supplier_id,cost_per_unit_pkr,reorder_level,status
+PRD001,Basmati Rice 5kg,Dry Goods,5kg,1200,Warehouse-A Shelf-12,2026-05-17,BATCH-2026-0412,SUP-AT-001,1850,200,ACTIVE
+PRD002,Sunflower Oil 1L,Cooking Oil,1L,340,Warehouse-B Shelf-03,2026-05-17,BATCH-2026-0498,SUP-PO-002,420,100,ACTIVE
+PRD003,Sugar 1kg,Dry Goods,1kg,780,Warehouse-A Shelf-08,2026-05-17,BATCH-2026-0501,SUP-MC-003,175,300,ACTIVE
+PRD004,Atta Whole Wheat 10kg,Dry Goods,10kg,450,Warehouse-C Shelf-02,2026-05-17,BATCH-2026-0389,SUP-AT-001,1200,100,ACTIVE
+PRD005,Lentils (Masoor Dal) 2kg,Pulses,2kg,220,Warehouse-A Shelf-15,2026-05-17,BATCH-2026-0467,SUP-PO-002,680,80,ACTIVE
+PRD006,Chickpeas 2kg,Pulses,2kg,190,Warehouse-B Shelf-11,2026-05-17,BATCH-2026-0421,SUP-MC-003,720,75,ACTIVE
+PRD007,Black Tea 500g,Beverages,500g,560,Warehouse-C Shelf-07,2026-05-17,BATCH-2026-0503,SUP-TL-004,380,150,ACTIVE
+PRD008,Salt 1kg,Condiments,1kg,900,Warehouse-A Shelf-04,2026-05-17,BATCH-2026-0399,SUP-TL-004,55,400,ACTIVE
+PRD009,Tomato Paste 400g,Canned Goods,400g,275,Warehouse-B Shelf-06,2026-05-17,BATCH-2026-0488,SUP-CG-005,210,100,ACTIVE
+PRD010,Mixed Spices 100g,Condiments,100g,430,Warehouse-C Shelf-09,2026-05-17,BATCH-2026-0477,SUP-CG-005,320,120,ACTIVE

@@ -1,0 +1,51 @@
+{
+  "complaints_metadata": {
+    "report_id": "CC-2026-0520-24H",
+    "generated_at": "2026-05-20T14:00:00+05:00",
+    "period": "2026-05-19T14:00:00+05:00 to 2026-05-20T14:00:00+05:00",
+    "total_complaints_received": 47,
+    "product_id": "PRD001",
+    "product_name": "Basmati Rice 5kg",
+    "complaint_category": "OUT_OF_STOCK",
+    "channel_breakdown": {
+      "website": 28,
+      "mobile_app": 14,
+      "whatsapp_support": 5
+    }
+  },
+  "critical_finding": {
+    "finding": "47 customers received 'Out of Stock' error when attempting to purchase Basmati Rice 5kg in the last 24 hours",
+    "implication": "The product is showing as UNAVAILABLE on the customer-facing platform despite warehouse records showing 1200 units",
+    "contradiction_flag": "WAREHOUSE_STOCK_DISCREPANCY",
+    "potential_cause": "Warehouse stock count is outdated — actual physical stock may be depleted or unavailable for dispatch"
+  },
+  "complaints": [
+    {"complaint_id": "CMP-001", "customer_id": "CUST-7823", "timestamp": "2026-05-19T14:23:00+05:00", "channel": "website", "message": "Tried to order Basmati Rice 5kg three times. Keeps saying out of stock. Very frustrated.", "sentiment": "NEGATIVE", "resolved": false},
+    {"complaint_id": "CMP-002", "customer_id": "CUST-3341", "timestamp": "2026-05-19T15:07:00+05:00", "channel": "mobile_app", "message": "Out of stock again? This is the second week this product is unavailable. Please sort your inventory.", "sentiment": "VERY_NEGATIVE", "resolved": false},
+    {"complaint_id": "CMP-003", "customer_id": "CUST-9912", "timestamp": "2026-05-19T16:44:00+05:00", "channel": "website", "message": "Cannot add Basmati Rice to cart. Out of stock message appears.", "sentiment": "NEUTRAL", "resolved": false},
+    {"complaint_id": "CMP-004", "customer_id": "CUST-4556", "timestamp": "2026-05-19T17:30:00+05:00", "channel": "whatsapp_support", "message": "Yaar basmati rice nahi mil raha. Website per out of stock likh raha hai.", "sentiment": "NEGATIVE", "resolved": false},
+    {"complaint_id": "CMP-005", "customer_id": "CUST-2287", "timestamp": "2026-05-19T18:12:00+05:00", "channel": "website", "message": "Out of stock error on Basmati Rice 5kg. I ordered 3 bags last month with no issues. What happened?", "sentiment": "CONFUSED", "resolved": false},
+    {"complaint_id": "CMP-006", "customer_id": "CUST-6630", "timestamp": "2026-05-19T19:45:00+05:00", "channel": "mobile_app", "message": "Basmati not available. Showing out of stock for 2 days now.", "sentiment": "NEGATIVE", "resolved": false},
+    {"complaint_id": "CMP-007", "customer_id": "CUST-1190", "timestamp": "2026-05-19T20:22:00+05:00", "channel": "website", "message": "Out of stock message keeps appearing. Please restock ASAP.", "sentiment": "NEGATIVE", "resolved": false},
+    {"complaint_id": "CMP-008", "customer_id": "CUST-8845", "timestamp": "2026-05-19T21:00:00+05:00", "channel": "mobile_app", "message": "Can't order basmati rice. website says out of stock.", "sentiment": "NEGATIVE", "resolved": false},
+    {"complaint_id": "CMP-009", "customer_id": "CUST-5573", "timestamp": "2026-05-19T22:17:00+05:00", "channel": "website", "message": "Out of stock error. I need to order 5 bags for my restaurant. When will it be back?", "sentiment": "VERY_NEGATIVE", "resolved": false},
+    {"complaint_id": "CMP-010", "customer_id": "CUST-3398", "timestamp": "2026-05-19T23:05:00+05:00", "channel": "whatsapp_support", "message": "The website is showing Basmati Rice as out of stock but my friend bought it yesterday? Is this a mistake?", "sentiment": "CONFUSED", "resolved": false}
+  ],
+  "complaints_continuation_note": "37 additional complaints follow the same pattern — all reporting 'out of stock' error for PRD001 Basmati Rice 5kg between 2026-05-19 14:00 and 2026-05-20 14:00. Total: 47 complaints.",
+  "summary_statistics": {
+    "avg_complaints_per_hour": 1.96,
+    "peak_complaint_hour": "2026-05-19T18:00-19:00",
+    "peak_complaints_in_hour": 7,
+    "repeat_customers": 3,
+    "estimated_lost_revenue_pkr": 87050,
+    "estimated_orders_lost": 47,
+    "customer_churn_risk": "HIGH"
+  },
+  "comparison_to_baseline": {
+    "avg_daily_complaints_last_30_days": 2.3,
+    "todays_complaints": 47,
+    "increase_factor": 20.4,
+    "anomaly_detected": true,
+    "anomaly_severity": "CRITICAL"
+  }
+}

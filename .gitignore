@@ -1,0 +1,134 @@
+# ═══════════════════════════════════════════════════════════
+#  Baseera — .gitignore
+#  PUBLIC REPO — everything sensitive MUST be listed here
+# ═══════════════════════════════════════════════════════════
+
+# ── SECRETS (NEVER COMMIT) ──────────────────────────────────
+# Real environment files with API keys
+.env
+.env.local
+.env.*.local
+backend/.env
+
+# Android local machine paths
+mobile/android/local.properties
+
+# Any accidental key files
+*.key
+*.pem
+*.p12
+*.keystore
+*.jks
+
+# ── PYTHON BUILD ARTIFACTS ───────────────────────────────────
+__pycache__/
+*.py[cod]
+*$py.class
+*.pyo
+*.pyd
+*.egg-info/
+dist/
+*.egg
+.eggs/
+.cache/
+*.spec
+
+# ── PYTHON VIRTUAL ENVIRONMENTS ──────────────────────────────
+venv/
+.venv/
+env/
+.env/
+ENV/
+
+# ── PYTHON TEST SCRATCH FILES ────────────────────────────────
+# (one-off debug scripts — not production code)
+backend/test_*.py
+
+# ── FLUTTER / DART BUILD ARTIFACTS ───────────────────────────
+mobile/build/
+mobile/.dart_tool/
+mobile/.flutter-plugins
+mobile/.flutter-plugins-dependencies
+mobile/.packages
+mobile/**/*.g.dart
+mobile/**/*.freezed.dart
+
+# ── ANDROID BUILD ARTIFACTS ──────────────────────────────────
+mobile/android/.gradle/
+mobile/android/.kotlin/
+mobile/android/build/
+mobile/android/app/build/
+mobile/android/captures/
+mobile/android/app/debug/
+mobile/android/app/release/
+mobile/android/app/profile/
+
+# ── GRADLE ───────────────────────────────────────────────────
+*.iml
+.gradle/
+gradle-app.setting
+!gradle-wrapper.jar
+
+# ── IDE & EDITOR FILES ───────────────────────────────────────
+.vscode/
+.idea/
+*.iml
+*.ipr
+*.iws
+.project
+.classpath
+.settings/
+*.suo
+*.user
+*.userosscache
+*.sln.docstates
+
+# ── DEMO ASSETS (LARGE BINARY FILES) ─────────────────────────
+demo-assets/*.mp4
+demo-assets/*.mov
+demo-assets/*.avi
+demo-assets/*.mkv
+
+# ── OPERATING SYSTEM FILES ───────────────────────────────────
+# macOS
+.DS_Store
+.AppleDouble
+.LSOverride
+._*
+.Spotlight-V100
+.Trashes
+
+# Windows
+Thumbs.db
+Thumbs.db:encryptable
+ehthumbs.db
+Desktop.ini
+$RECYCLE.BIN/
+
+# Linux
+*~
+
+# ── LOGS ─────────────────────────────────────────────────────
+*.log
+logs/
+pip-log.txt
+pip-delete-this-directory.txt
+
+# ── COVERAGE / TESTING ───────────────────────────────────────
+htmlcov/
+.tox/
+.coverage
+.coverage.*
+coverage.xml
+*.cover
+.hypothesis/
+.pytest_cache/
+nosetests.xml
+test-results/
+
+# ── MISC ─────────────────────────────────────────────────────
+*.tmp
+*.temp
+*.bak
+*.swp
+*.swo

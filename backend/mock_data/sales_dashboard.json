@@ -1,0 +1,65 @@
+{
+  "dashboard_metadata": {
+    "report_id": "SD-2026-0520-DAILY",
+    "generated_at": "2026-05-20T08:00:00+05:00",
+    "report_period": "2026-05-13 to 2026-05-19",
+    "data_source": "Krevon Retail POS System v3.2",
+    "currency": "PKR",
+    "store_locations": ["Gulberg Lahore", "DHA Lahore", "Johar Town Lahore", "Online Store"]
+  },
+  "basmati_rice_5kg": {
+    "product_id": "PRD001",
+    "product_name": "Basmati Rice 5kg",
+    "sku": "BR5K-001",
+    "daily_sales": [
+      {"date": "2026-05-13", "units_sold": 162, "revenue_pkr": 299700},
+      {"date": "2026-05-14", "units_sold": 175, "revenue_pkr": 323750},
+      {"date": "2026-05-15", "units_sold": 193, "revenue_pkr": 357050},
+      {"date": "2026-05-16", "units_sold": 188, "revenue_pkr": 347800},
+      {"date": "2026-05-17", "units_sold": 201, "revenue_pkr": 371850},
+      {"date": "2026-05-18", "units_sold": 167, "revenue_pkr": 308950},
+      {"date": "2026-05-19", "units_sold": 174, "revenue_pkr": 321900}
+    ],
+    "summary": {
+      "total_units_sold_7_days": 1260,
+      "total_revenue_pkr_7_days": 2331000,
+      "average_daily_sales": 180,
+      "peak_day": "2026-05-17",
+      "peak_units": 201,
+      "last_3_days_units": 542,
+      "last_3_days_revenue_pkr": 1002700,
+      "sales_trend": "STABLE_HIGH",
+      "stock_velocity_category": "FAST_MOVING"
+    },
+    "inventory_projection": {
+      "current_listed_stock": 1200,
+      "note": "This figure is from warehouse_stock.csv dated 2026-05-17 — may be outdated",
+      "projected_days_until_stockout_at_avg_rate": 6.67,
+      "projected_stockout_date_if_stock_accurate": "2026-05-27",
+      "BUT_considering_3_days_elapsed_since_last_count": {
+        "estimated_current_stock": 658,
+        "adjusted_days_until_stockout": 3.66,
+        "adjusted_stockout_date": "2026-05-24"
+      },
+      "incoming_order_id": "KR-2026-PR-0892",
+      "incoming_order_quantity": 800,
+      "incoming_expected_date": "2026-05-19",
+      "warning": "Incoming delivery is delayed per supplier communication"
+    }
+  },
+  "other_products_summary": [
+    {"product_id": "PRD002", "name": "Sunflower Oil 1L", "avg_daily_sales": 45, "stock_health": "GOOD"},
+    {"product_id": "PRD003", "name": "Sugar 1kg", "avg_daily_sales": 88, "stock_health": "GOOD"},
+    {"product_id": "PRD004", "name": "Atta Whole Wheat 10kg", "avg_daily_sales": 62, "stock_health": "MONITOR"},
+    {"product_id": "PRD007", "name": "Black Tea 500g", "avg_daily_sales": 34, "stock_health": "GOOD"}
+  ],
+  "alerts": [
+    {
+      "alert_id": "ALT-001",
+      "severity": "CRITICAL",
+      "product_id": "PRD001",
+      "message": "Basmati Rice 5kg is FAST_MOVING with delivery delay. Risk of stockout in <4 days if warehouse count is outdated.",
+      "triggered_at": "2026-05-20T08:00:00+05:00"
+    }
+  ]
+}

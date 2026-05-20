@@ -1,0 +1,40 @@
+# Baseera Flutter App — .gitignore
+
+# Flutter
+.dart_tool/
+.flutter-plugins
+.flutter-plugins-dependencies
+.packages
+.pub-cache/
+.pub/
+build/
+
+# Android
+android/.gradle
+android/local.properties
+android/key.properties
+android/app/debug.keystore
+android/app/release.keystore
+!android/gradle.properties
+
+# iOS
+ios/.symlinks/
+ios/Pods/
+ios/Flutter/App.framework
+ios/Flutter/Flutter.framework
+ios/Flutter/Flutter.podspec
+ios/Flutter/Generated.xcconfig
+ios/Runner/GeneratedPluginRegistrant.*
+
+# Dart
+*.dart.js
+*.part.js
+
+# VS Code
+.vscode/
+
+# IntelliJ
+.idea/
+*.iml
+*.ipr
+*.iws

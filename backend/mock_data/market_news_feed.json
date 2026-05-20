@@ -1,0 +1,85 @@
+{
+  "feed_metadata": {
+    "feed_id": "MNF-PK-2026-0520",
+    "generated_at": "2026-05-20T13:00:00+05:00",
+    "source": "Pakistan Business & Logistics News Aggregator",
+    "region": "Punjab, Pakistan",
+    "relevance_tags": ["supply_chain", "transport", "retail", "food_commodities", "Lahore"]
+  },
+  "news_items": [
+    {
+      "article_id": "ART-001",
+      "headline": "Punjab Transport Workers Strike Enters Day 3 — No Resolution in Sight",
+      "source": "Dawn Business",
+      "url": "https://dawn.com/news/transport-strike-punjab-2026",
+      "published_at": "2026-05-20T09:30:00+05:00",
+      "summary": "The transport workers' strike that began on May 18 has now entered its third day with no sign of resolution. The All Pakistan Transport Association (APTA) has suspended all freight movement across Punjab following a dispute over fuel surcharge rates. Goods worth an estimated PKR 12 billion are stranded at warehouses in Gujranwala, Sialkot, Faisalabad, and Sheikhupura.",
+      "impact_assessment": "SEVERE",
+      "affected_sectors": ["food_distribution", "retail", "manufacturing", "agriculture"],
+      "affected_cities": ["Lahore", "Gujranwala", "Faisalabad", "Multan", "Sialkot"],
+      "relevance_to_retail": "HIGH"
+    },
+    {
+      "article_id": "ART-002",
+      "headline": "Grocery Prices Spike as Supply Disruptions Hit Lahore Markets",
+      "source": "The News International",
+      "url": "https://thenews.com.pk/grocery-prices-lahore-supply-disruption",
+      "published_at": "2026-05-20T11:15:00+05:00",
+      "summary": "Retail grocery prices in Lahore have surged 8-15% as the transport strike cuts off fresh supplies from producing regions. Basmati rice, wheat flour, and cooking oil are among the most affected commodities. Several major retailers report running low on staple goods with no restocking possible until freight movement resumes.",
+      "impact_assessment": "HIGH",
+      "affected_products": ["basmati_rice", "wheat_flour", "cooking_oil", "lentils"],
+      "price_increase_range_pct": "8-15",
+      "relevance_to_retail": "VERY_HIGH"
+    },
+    {
+      "article_id": "ART-003",
+      "headline": "E-Commerce Platforms See Surge in 'Out of Stock' Complaints Amid Punjab Strike",
+      "source": "ProPakistani",
+      "url": "https://propakistani.pk/ecommerce-out-of-stock-punjab-strike",
+      "published_at": "2026-05-20T10:45:00+05:00",
+      "summary": "Multiple Pakistani e-commerce and retail platforms are reporting a surge in customer complaints about out-of-stock items as the Punjab transport strike disrupts supply chains. Customer service teams are overwhelmed with inquiries about delivery delays and unavailable products. Analysts predict the situation will worsen if the strike extends beyond 5 days.",
+      "impact_assessment": "HIGH",
+      "affected_sector": "e_commerce_retail",
+      "customer_complaints_trend": "RAPIDLY_INCREASING",
+      "relevance_to_retail": "VERY_HIGH"
+    },
+    {
+      "article_id": "ART-004",
+      "headline": "Government Mediators Enter Punjab Freight Strike Negotiations",
+      "source": "ARY News Business",
+      "url": "https://arynews.com/punjab-freight-strike-negotiations",
+      "published_at": "2026-05-20T12:00:00+05:00",
+      "summary": "The provincial government has dispatched mediators to negotiate with the All Pakistan Transport Association. Initial talks are described as 'constructive' but no timeline for resolution has been given. Industry bodies estimate each additional day of the strike costs Punjab's economy PKR 3-5 billion in disrupted commerce.",
+      "impact_assessment": "MODERATE",
+      "resolution_timeline": "UNCERTAIN",
+      "earliest_resolution_estimate": "2026-05-23",
+      "relevance_to_retail": "MEDIUM"
+    },
+    {
+      "article_id": "ART-005",
+      "headline": "Retailers Advised to Activate Emergency Procurement Protocols",
+      "source": "Pakistan Retail Association",
+      "url": "https://pakretail.org/emergency-procurement-advisory-may-2026",
+      "published_at": "2026-05-19T16:00:00+05:00",
+      "summary": "The Pakistan Retail Association has issued an advisory urging all member retailers to activate emergency procurement protocols. The advisory specifically recommends: (1) immediate stock audit for fast-moving goods, (2) contacting alternative suppliers in unaffected regions, (3) transparently notifying customers of expected delays, (4) exploring air freight for critical items where margins allow.",
+      "impact_assessment": "HIGH",
+      "advisory_type": "EMERGENCY_PROCUREMENT",
+      "recommended_actions": [
+        "Immediate physical stock audit",
+        "Contact alternative suppliers in Karachi and Sindh",
+        "Update customer-facing delivery estimates",
+        "Notify customers proactively to manage expectations"
+      ],
+      "relevance_to_retail": "VERY_HIGH"
+    }
+  ],
+  "market_intelligence_summary": {
+    "crisis_level": "SEVERE",
+    "transport_disruption_ongoing": true,
+    "strike_start_date": "2026-05-18",
+    "estimated_resolution_date": "2026-05-23",
+    "total_delay_days": 5,
+    "most_affected_commodities": ["basmati_rice", "wheat_flour", "cooking_oil"],
+    "recommendation": "Immediate emergency procurement action required for fast-moving staple goods"
+  }
+}

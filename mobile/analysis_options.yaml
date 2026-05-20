@@ -1,0 +1,8 @@
+include: package:flutter_lints/flutter.yaml
+
+analyzer:
+  errors:
+    # Downgrade warnings that don't affect functionality
+    unnecessary_non_null_assertion: ignore
+    dead_null_aware_expression: ignore
+    unnecessary_cast: ignore

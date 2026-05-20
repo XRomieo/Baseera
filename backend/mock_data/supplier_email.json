@@ -1,0 +1,53 @@
+{
+  "email_metadata": {
+    "message_id": "AT-2026-0520-00847",
+    "from": "ahmed.traders.lahore@gmail.com",
+    "from_name": "Ahmed Traders - Supply Division",
+    "to": "procurement@krevon-retail.pk",
+    "cc": "logistics@krevon-retail.pk",
+    "subject": "URGENT: Delivery Delay Notice - Basmati Rice & Atta Consignment",
+    "date": "2026-05-20",
+    "time": "09:14:00",
+    "timezone": "PKT",
+    "priority": "HIGH",
+    "category": "SUPPLIER_COMMUNICATION"
+  },
+  "email_body": {
+    "salutation": "Dear Krevon Retail Procurement Team,",
+    "paragraphs": [
+      "We regret to inform you that your pending consignment of Basmati Rice (5kg) — Order #KR-2026-PR-0892 for 800 units — has been significantly delayed due to circumstances beyond our control.",
+      "As you may be aware, the ongoing transport workers' strike across Punjab has completely halted road freight movement from our warehouse in Gujranwala to Lahore and connecting routes. All major freight carriers including TCS Logistics, M&P Express, and Fauji Fertilizer Transport have suspended operations until further notice.",
+      "We had originally scheduled delivery for 2026-05-19 (yesterday). We are now estimating a revised delivery date of 2026-05-25 at the earliest, pending resolution of the strike. This represents a 5-day delay from the original schedule.",
+      "We understand this creates significant operational challenges for your business. We strongly recommend reviewing your current inventory levels for Basmati Rice and activating emergency stock protocols if your buffer stock is running low.",
+      "As a goodwill gesture, we are offering a 3% discount on this consignment and will prioritize your delivery once transport resumes. We will send you real-time updates as the situation develops.",
+      "Please do not hesitate to contact our logistics coordinator Mr. Farhan Khan at +92-42-35776543 or farhan.khan@ahmedtraders.pk for urgent queries."
+    ],
+    "closing": "Warm Regards,",
+    "sender": "Shahid Ahmed",
+    "sender_title": "Director of Operations",
+    "company": "Ahmed Traders (Pvt) Ltd.",
+    "phone": "+92-42-35776543",
+    "fax": "+92-42-35776544"
+  },
+  "order_details": {
+    "order_id": "KR-2026-PR-0892",
+    "product": "Basmati Rice 5kg",
+    "product_id": "PRD001",
+    "ordered_quantity": 800,
+    "original_delivery_date": "2026-05-19",
+    "revised_delivery_date": "2026-05-25",
+    "delay_days": 5,
+    "reason": "Punjab transport workers strike",
+    "affected_routes": ["Gujranwala-Lahore", "Lahore-Islamabad", "Faisalabad-Lahore"],
+    "compensation_offered": "3% discount on consignment value",
+    "unit_price_pkr": 1850,
+    "total_order_value_pkr": 1480000
+  },
+  "supplier_credibility_indicators": {
+    "relationship_years": 7,
+    "on_time_delivery_rate_pct": 94,
+    "previous_delays": 2,
+    "is_verified_supplier": true,
+    "last_successful_delivery": "2026-04-28"
+  }
+}
