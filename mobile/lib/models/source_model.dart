@@ -47,14 +47,9 @@ class SourceModel {
     );
   }
 
-  static String _iconForSource(String sourceName) {
-    if (sourceName.endsWith('.csv')) return '📊';
-    if (sourceName.contains('email')) return '📧';
-    if (sourceName.contains('sales')) return '📈';
-    if (sourceName.contains('complaint')) return '⚠️';
-    if (sourceName.contains('news')) return '📰';
-    return '📄';
-  }
+  // UI now renders Lucide icons keyed by source slot; this field is retained
+  // for API compatibility but no longer holds an emoji glyph.
+  static String _iconForSource(String sourceName) => '';
 }
 
 enum SourceCredibility {

@@ -1,5 +1,10 @@
 # Baseera Flutter App — .gitignore
 
+# Secrets — cloud API URL etc. (template in .env.example is committed)
+.env
+.env.local
+.env.*.local
+
 # Flutter
 .dart_tool/
 .flutter-plugins

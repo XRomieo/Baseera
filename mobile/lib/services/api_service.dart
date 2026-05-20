@@ -4,12 +4,27 @@
 
 import 'package:dio/dio.dart';
 import 'package:flutter/foundation.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 import '../models/analysis_result_model.dart';
 import '../models/outcome_model.dart';
 
-// Android emulator maps 10.0.2.2 to the host machine's localhost
-// For physical device testing: replace with your machine's LAN IP (e.g. 192.168.1.x)
-const String _baseUrl = 'http://10.0.2.2:8000';
+// Debug builds (`flutter run`) → host machine's localhost via Android emulator alias.
+// Release builds (`flutter build apk --release`) → cloud URL from mobile/.env
+// (.env is gitignored; see mobile/.env.example for setup instructions).
+const String _debugUrl = 'http://10.0.2.2:8000';
+
+String _resolveBaseUrl() {
+  if (kDebugMode) return _debugUrl;
+  final cloud = dotenv.maybeGet('BASEERA_API_URL');
+  if (cloud == null || cloud.isEmpty) {
+    debugPrint(
+      '[ApiService] WARNING: BASEERA_API_URL not set in .env — '
+      'falling back to debug URL. Set it before release build.',
+    );
+    return _debugUrl;
+  }
+  return cloud;
+}
 
 class ApiService {
   late final Dio _dio;
@@ -17,7 +32,7 @@ class ApiService {
   ApiService() {
     _dio = Dio(
       BaseOptions(
-        baseUrl: _baseUrl,
+        baseUrl: _resolveBaseUrl(),
         connectTimeout: const Duration(seconds: 30),
         receiveTimeout: const Duration(seconds: 90), // Gemini can be slow
         headers: {

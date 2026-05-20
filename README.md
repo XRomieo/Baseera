@@ -1,251 +1,237 @@
 # Baseera — AISeekho 2026 Hackathon | Challenge 1
 
-**Autonomous Content-to-Action Agent**  
-AI-powered supply chain crisis detector that reads 5 data sources, spots contradictions, resolves them using Gemini 2.5 Flash, and executes a 4-step action chain — all autonomously.
+**Autonomous Content-to-Action Agent**
+AI-powered supply chain crisis detector. Reads 5 data sources, spots contradictions, resolves them with Gemini 2.5 Flash, executes a 4-step action chain — all autonomously. Premium royal dark theme, Lucide icon set, Outfit typography, Unicode-aware PDF reports.
 
 ---
 
 ## What It Does
 
-1. **Analyzes 5 data sources** (warehouse CSV, supplier email, sales dashboard, customer complaints, market news) for contradictions
-2. **Resolves conflicts** using Gemini 2.5 Flash to determine which source is most credible
-3. **Executes a 4-step action chain** autonomously (physical audit → supplier contact → customer notifications → monitoring)
-4. **Handles failures gracefully** — Step 2 simulates a supplier API timeout and auto-retries via email fallback
-5. **Shows before/after outcomes** with animated metrics and exports a branded PDF report
+1. **Analyzes 5 data sources** (warehouse CSV, supplier email, sales dashboard, customer complaints, market news) for contradictions.
+2. **Resolves conflicts** with Gemini 2.5 Flash — picks the most credible source.
+3. **Executes a 4-step action chain** autonomously (physical audit → supplier contact → customer notifications → monitoring).
+4. **Handles failures gracefully** — Step 2 simulates a supplier API timeout and auto-retries via email fallback.
+5. **Shows before/after outcomes** with animated metrics. Exports a branded PDF report.
 
 ---
 
 ## Project Structure
 
 ```
-AISeekho-2026/
-├── backend/                    # Python FastAPI backend
+Baseera/
+├── backend/                                # Python FastAPI backend
 │   ├── agents/
-│   │   ├── gemini_client.py    # Gemini API wrapper (new + legacy SDK fallback)
-│   │   ├── action_executor.py  # 4-step execution engine with failure simulation
-│   │   └── data_loader.py      # Loads and formats mock data sources
-│   ├── mock_data/              # 5 data source files (CSV + JSON)
-│   │   ├── warehouse_stock.csv
-│   │   ├── supplier_email.json
-│   │   ├── sales_dashboard.json
-│   │   ├── customer_complaints.json
-│   │   └── market_news_feed.json
-│   ├── main.py                 # FastAPI app with 5 routes
+│   │   ├── gemini_client.py                # Gemini API wrapper (new + legacy SDK fallback)
+│   │   ├── action_executor.py              # 4-step engine with failure simulation
+│   │   └── data_loader.py                  # Loads + formats mock data sources
+│   ├── mock_data/                          # 5 source files (CSV + JSON)
+│   ├── main.py                             # FastAPI app with 5 routes
 │   ├── requirements.txt
-│   ├── .env                    # ← YOU CREATE THIS (gitignored)
-│   └── .env.example            # Template for .env
-├── mobile/                     # Flutter Android app
+│   ├── .env                                # ← YOU CREATE (gitignored)
+│   └── .env.example                        # Template
+├── mobile/                                 # Flutter Android app
 │   ├── lib/
-│   │   ├── main.dart           # App entry, theme, routing
-│   │   ├── models/             # Data models (analysis, source, action, outcome)
-│   │   ├── providers/          # AnalysisProvider (state management)
-│   │   ├── screens/            # 4 screens: upload, sources, action_chain, outcome
-│   │   └── services/           # ApiService (Dio HTTP client)
-│   ├── android/
-│   │   ├── local.properties           # ← YOU CREATE THIS (gitignored)
-│   │   └── local.properties.example   # Template
+│   │   ├── main.dart                       # Entry, ThemeData, routing, dotenv load
+│   │   ├── models/                         # Analysis, source, action, outcome models
+│   │   ├── providers/analysis_provider.dart
+│   │   ├── services/api_service.dart       # Dio + kDebugMode URL switch
+│   │   └── screens/
+│   │       ├── splash_screen.dart          # Dart splash with fade→home transition
+│   │       ├── home_screen.dart
+│   │       ├── sources_screen.dart
+│   │       ├── action_chain_screen.dart
+│   │       └── outcome_screen.dart
+│   ├── assets/
+│   │   ├── logo.png                        # App logo (eye)
+│   │   └── icon/                           # Padded launcher icon + splash PNGs
+│   ├── android/app/src/main/res/           # Generated launcher icons + splash drawables
+│   ├── .env                                # ← YOU CREATE (gitignored, holds cloud URL)
+│   ├── .env.example                        # Template + deploy steps in comments
 │   └── pubspec.yaml
+├── docs/
+│   ├── README.md
+│   ├── architecture.md
+│   └── TROUBLESHOOTING.md
 ├── .gitignore
-└── README.md
+└── README.md                               # This file
 ```
 
 ---
 
 ## Prerequisites
 
-Install all of these **system-wide** before cloning:
-
 | Tool | Version | Download |
-|------|---------|----------|
-| Python | 3.12+ | https://python.org/downloads |
-| Java (JDK) | 17 or 21 | https://adoptium.net |
+|---|---|---|
+| Python | 3.11+ | https://python.org/downloads |
+| Java JDK | 17 or 21 | https://adoptium.net |
 | Flutter | 3.x stable | https://docs.flutter.dev/get-started/install |
 | Android Studio | Latest | https://developer.android.com/studio |
 | Git | Any | https://git-scm.com |
 
-> **Python 3.14 note:** If using Python 3.14, set this before `pip install`:
-> ```powershell
-> $env:PYO3_USE_ABI3_FORWARD_COMPATIBILITY = "1"
-> ```
+> **Python 3.14 only:** set `$env:PYO3_USE_ABI3_FORWARD_COMPATIBILITY = "1"` before `pip install`.
 
 ---
 
 ## Setup
 
-### 1 — Clone the repo
+### 1. Clone
 
 ```powershell
 git clone https://github.com/XRomieo/Baseera.git
 cd Baseera
 ```
 
-### 2 — Backend setup
+### 2. Backend
 
 ```powershell
 cd backend
-
-# Install dependencies
 pip install -r requirements.txt
-
-# Create your .env file from the template
 Copy-Item .env.example .env
 ```
 
-Edit `backend/.env` and add your Gemini API key:
-
-```env
+Edit `backend/.env`:
+```
 GEMINI_API_KEY=your_gemini_api_key_here
 ```
+Free key at https://aistudio.google.com/app/apikey.
 
-Get a free key at: https://aistudio.google.com/app/apikey
-
-### 3 — Mobile setup
-
-Create `mobile/android/local.properties` from the template:
-
-```powershell
-Copy-Item mobile/android/local.properties.example mobile/android/local.properties
-```
-
-Edit `mobile/android/local.properties` with your actual paths:
-
-```properties
-flutter.sdk=C:\flutter
-sdk.dir=D:\Android\Sdk
-```
-
-> **Find your Android SDK path:** Android Studio → Settings → Android SDK → SDK Location
-
-Install Flutter dependencies:
+### 3. Mobile
 
 ```powershell
 cd mobile
 flutter pub get
+Copy-Item .env.example .env
 ```
+
+`mobile/.env` is only needed for **release builds**. Debug builds (`flutter run`) ignore it and hit `http://10.0.2.2:8000` (emulator alias for host localhost).
 
 ---
 
-## Running the App
+## Running (Debug — Local Backend)
 
-### Step 1 — Start the backend
-
+### Terminal 1 — Backend
 ```powershell
 cd backend
 python -m uvicorn main:app --reload --host 0.0.0.0 --port 8000
 ```
+Verify: http://localhost:8000/api/health → `{"status":"healthy",...}`.
 
-You should see:
-```
-INFO: Baseera backend started — state initialized
-INFO: Gemini API Key: ✓ loaded
-INFO: Application startup complete.
-INFO: Uvicorn running on http://0.0.0.0:8000
-```
-
-Verify it's working: http://localhost:8000/api/health
-
-### Step 2 — Launch the Flutter app
-
-Open a **second terminal** and run:
-
+### Terminal 2 — Flutter
 ```powershell
 cd mobile
 flutter run
 ```
+App auto-connects to `10.0.2.2:8000`. Tap **Run Analysis**.
 
-> The app connects to the backend via `http://10.0.2.2:8000` (Android emulator's alias for `localhost`).
-> If running on a **physical device**, update `lib/services/api_service.dart` to use your PC's local IP instead.
+---
 
-### Step 3 — Use the app
+## Building Release APK (Cloud Backend)
 
-1. Tap **"Run Analysis"** on the home screen
-2. Watch all 5 data sources load with shimmer animations
-3. See the contradiction detected between sources
-4. Tap **"Execute Action Chain"** to run all 4 steps
-5. Watch Step 2 fail → auto-retry → succeed (designed to demo fault tolerance)
-6. View the **Outcome Dashboard** with before/after metrics
-7. Tap the **download icon** to export a PDF report via your device's share sheet
+1. **Deploy the backend** to Render / Fly.io / Railway / Cloud Run. See `mobile/.env.example` for exact host configuration.
+2. **Edit `mobile/.env`**:
+   ```
+   BASEERA_API_URL=https://your-deployed-backend.onrender.com
+   ```
+3. **Build**:
+   ```powershell
+   cd mobile
+   flutter clean
+   flutter build apk --release
+   ```
+4. APK at `mobile/build/app/outputs/flutter-apk/app-release.apk`. Install on any device with internet — no laptop or LAN needed.
+
+### URL resolution logic
+
+[mobile/lib/services/api_service.dart](mobile/lib/services/api_service.dart):
+- `kDebugMode == true` → `http://10.0.2.2:8000` (hardcoded)
+- `kDebugMode == false` → `BASEERA_API_URL` from `mobile/.env`
+- Missing `.env` value → falls back to debug URL + logs a warning
 
 ---
 
 ## API Reference
 
 | Method | Endpoint | Description |
-|--------|----------|-------------|
-| `GET` | `/` | App info and endpoint list |
-| `GET` | `/api/health` | Health check + API key status |
-| `POST` | `/api/analyze` | Trigger Gemini analysis of 5 data sources |
+|---|---|---|
+| `GET` | `/` | App info |
+| `GET` | `/api/health` | Health check + Gemini key status |
+| `POST` | `/api/analyze` | Trigger Gemini analysis of 5 sources |
 | `POST` | `/api/execute-step` | Execute action step 1–4 |
-| `GET` | `/api/outcome` | Get before/after metrics + step details |
+| `GET` | `/api/outcome` | Before/after metrics |
 
 ---
 
 ## Environment Variables
 
 ### `backend/.env`
-
 | Variable | Required | Description |
-|----------|----------|-------------|
-| `GEMINI_API_KEY` | Yes | Your Gemini API key from Google AI Studio |
+|---|---|---|
+| `GEMINI_API_KEY` | Yes | Gemini API key from Google AI Studio |
+
+### `mobile/.env`
+| Variable | Required | Description |
+|---|---|---|
+| `BASEERA_API_URL` | Release builds only | HTTPS URL of deployed backend |
+
+Both `.env` files are gitignored. Templates (`.env.example`) are committed.
 
 ---
 
 ## Flutter Dependencies
 
 | Package | Purpose |
-|---------|---------|
-| `dio` | HTTP client for backend API calls |
+|---|---|
+| `dio` | HTTP client |
 | `provider` | State management |
-| `shimmer` | Skeleton loading animations |
-| `flutter_animate` | Smooth UI animations |
-| `google_fonts` | Outfit font family |
-| `path_provider` | Temp directory for PDF |
+| `shimmer` | Skeleton loaders |
+| `flutter_animate` | One-shot UI animations |
+| `google_fonts` | Outfit font |
+| `lucide_icons_flutter` | Lucide icon set (no emojis anywhere) |
+| `flutter_dotenv` | `.env` loader for cloud URL |
+| `path_provider` | Temp dir for PDF |
 | `pdf` | PDF generation |
-| `share_plus` | Android share sheet for PDF export |
+| `printing` | `PdfGoogleFonts.outfit*` — Unicode font in PDFs |
+| `share_plus` | Android share sheet |
+| `flutter_launcher_icons` (dev) | Generates adaptive launcher icons |
+| `flutter_native_splash` (dev) | Generates native Android 12+ splash |
 
 ---
 
-## Troubleshooting
+## Theme
 
-### `uvicorn` not found
-```powershell
-python -m uvicorn main:app --reload --host 0.0.0.0 --port 8000
-```
-Use `python -m uvicorn` instead of just `uvicorn`.
+Royal dark palette, defined in [mobile/lib/main.dart](mobile/lib/main.dart) `BaseeraColors`:
 
-### `flutter doctor` shows Android toolchain errors
-- Open Android Studio → SDK Manager → SDK Tools → check **Android SDK Command-line Tools**
-- Set `ANDROID_HOME` environment variable to your SDK path (e.g. `D:\Android\Sdk`)
+| Token | Hex |
+|---|---|
+| Background | `#0A0A12` |
+| Surface | `#0F0F1E` |
+| Primary | `#6C3FE8` |
+| Primary glow | `#9B6DFF` |
+| Gold | `#D4A017` |
+| Gold glow | `#FFD060` |
+| Success | `#00C97A` |
+| Error | `#FF4D6D` |
+| Warning | `#FFA500` |
+| Text primary | `#FFFFFF` |
+| Text secondary | `#A89BC2` |
+| Border | `#2A2040` |
+| Launcher icon bg | `#1A1035` |
 
-### App shows "Connection refused" / "Network error"
-- Make sure the backend is running on port 8000
-- On emulator, the backend URL is `10.0.2.2:8000` (already configured)
-- On physical device, update `baseUrl` in `lib/services/api_service.dart` to your PC's IP
-
-### PDF shows blank symbols (→, •, ⚠)
-- This is fixed — the PDF uses ASCII-safe characters (`->`, `>`, `[!]`)
-
-### `pydantic` install fails on Python 3.14
-```powershell
-$env:PYO3_USE_ABI3_FORWARD_COMPATIBILITY = "1"
-pip install -r requirements.txt
-```
-
-### AGP / Kotlin warnings during `flutter run`
-These are **warnings only** — the build still succeeds. They are about future Flutter deprecations, not current errors.
+Typography: **Outfit** (Google Fonts) across UI + PDF.
+Icons: **Lucide** exclusively. Zero emoji glyphs in the codebase.
 
 ---
 
 ## Tech Stack
 
 | Layer | Technology |
-|-------|-----------|
-| AI | Gemini 2.5 Flash (google-genai + google-generativeai SDKs) |
-| Backend | Python 3.12+, FastAPI, Uvicorn |
+|---|---|
+| AI | Gemini 2.5 Flash (`google-genai` + `google-generativeai`) |
+| Backend | Python 3.11+, FastAPI, Uvicorn |
 | Mobile | Flutter 3.x, Dart |
 | HTTP | Dio (Flutter), HTTPX (Python) |
-| State | Provider pattern |
-| PDF | dart-pdf + share_plus |
+| State | Provider |
+| PDF | `dart-pdf` + `printing` (Outfit Unicode) + `share_plus` |
 
 ---
 
@@ -253,13 +239,22 @@ These are **warnings only** — the build still succeeds. They are about future 
 
 **Challenge 1 — Autonomous Content-to-Action Agent**
 
-The scenario: An e-commerce warehouse has conflicting data about Basmati Rice 5kg stock levels. The AI agent must:
-- Detect that warehouse CSV (1,200 units) contradicts sales dashboard + customer complaints (effectively 0 units)
-- Resolve the contradiction in favour of fresher, corroborating sources
-- Autonomously execute a 4-step recovery plan
-- Handle a supplier API failure gracefully (auto-retry via email fallback)
-- Reduce stockout risk from 87% → 12%
+Scenario: a Lahore grocery chain warehouse shows 1,200 units of Basmati Rice 5kg, but customers report stockouts, sales data shows the stock was depleted 3 days ago, and a supplier confirms a 5-day delivery delay. Baseera:
+- Detects the contradiction
+- Resolves it in favour of fresher, corroborating sources
+- Autonomously executes a 4-step recovery plan
+- Handles a supplier API failure (auto-retry via email fallback)
+- Reduces stockout risk from 87% → 12%
 
 ---
 
-*Built with ❤️ for AISeekho 2026 | Powered by Gemini 2.5 Flash*
+## Further Docs
+
+- [docs/architecture.md](docs/architecture.md) — system diagrams, state machines, design patterns
+- [docs/RENDER-DEPLOYMENT.md](docs/RENDER-DEPLOYMENT.md) — step-by-step Render deployment guide
+- [docs/TROUBLESHOOTING.md](docs/TROUBLESHOOTING.md) — common errors + fixes
+- [mobile/.env.example](mobile/.env.example) — backend deploy template + alt-host notes
+
+---
+
+*Built for AISeekho 2026 | Powered by Gemini 2.5 Flash*

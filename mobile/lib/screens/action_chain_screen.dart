@@ -1,11 +1,14 @@
 // screens/action_chain_screen.dart
 // Screen 3: Action Chain Execution
-// Vertical stepper showing 4 steps executing in sequence.
-// Step 2 shows FAILED → RETRYING → COMPLETED for failure recovery demo.
+// Royal dark theme: gradient step circles, glowing status dots, dashed connector,
+// spinning Lucide loader during execution.
+
+import 'dart:math' as math;
 
 import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:lucide_icons_flutter/lucide_icons.dart';
 import 'package:provider/provider.dart';
 
 import '../main.dart';
@@ -19,22 +22,33 @@ class ActionChainScreen extends StatefulWidget {
   State<ActionChainScreen> createState() => _ActionChainScreenState();
 }
 
-class _ActionChainScreenState extends State<ActionChainScreen> {
+class _ActionChainScreenState extends State<ActionChainScreen>
+    with TickerProviderStateMixin {
   bool _hasStarted = false;
+  late AnimationController _spinController;
 
   @override
   void initState() {
     super.initState();
-    // Auto-start execution after a brief delay
+    _spinController = AnimationController(
+      vsync: this,
+      duration: const Duration(milliseconds: 1200),
+    )..repeat();
+
     WidgetsBinding.instance.addPostFrameCallback((_) {
       _startExecution();
     });
   }
 
+  @override
+  void dispose() {
+    _spinController.dispose();
+    super.dispose();
+  }
+
   Future<void> _startExecution() async {
     if (_hasStarted) return;
     _hasStarted = true;
-
     await Future.delayed(const Duration(milliseconds: 800));
     if (mounted) {
       context.read<AnalysisProvider>().executeAllSteps();
@@ -43,47 +57,82 @@ class _ActionChainScreenState extends State<ActionChainScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final colors = Theme.of(context).extension<AppColors>()!;
     final provider = context.watch<AnalysisProvider>();
     final steps = provider.steps;
     final isComplete = provider.appState == AppState.executionComplete;
 
     return Scaffold(
+      backgroundColor: BaseeraColors.bg,
       appBar: AppBar(
-        title: const Text('Action Chain'),
+        title: Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            const Icon(LucideIcons.gitBranch,
+                color: BaseeraColors.primaryGlow, size: 20),
+            const SizedBox(width: 8),
+            Text(
+              'Action Chain',
+              style: GoogleFonts.outfit(
+                fontSize: 18,
+                fontWeight: FontWeight.w700,
+                color: BaseeraColors.textPrimary,
+              ),
+            ),
+          ],
+        ),
         leading: IconButton(
-          icon: const Icon(Icons.arrow_back_rounded),
+          icon: const Icon(LucideIcons.arrowLeft,
+              color: BaseeraColors.primaryGlow),
           onPressed: () => Navigator.pop(context),
         ),
       ),
       body: Column(
         children: [
-          // Header banner
           Container(
             width: double.infinity,
-            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-            color: colors.primary.withValues(alpha: 0.06),
+            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+            decoration: BoxDecoration(
+              color: isComplete
+                  ? BaseeraColors.success.withValues(alpha: 0.10)
+                  : BaseeraColors.primary.withValues(alpha: 0.10),
+              border: Border(
+                bottom: BorderSide(
+                  color: isComplete
+                      ? BaseeraColors.success.withValues(alpha: 0.4)
+                      : BaseeraColors.primary.withValues(alpha: 0.4),
+                  width: 0.5,
+                ),
+              ),
+            ),
             child: Row(
               children: [
-                Icon(Icons.auto_fix_high_rounded, color: colors.primary, size: 20),
-                const SizedBox(width: 8),
+                Icon(
+                  isComplete
+                      ? LucideIcons.checkCircle
+                      : LucideIcons.sparkles,
+                  color: isComplete
+                      ? BaseeraColors.success
+                      : BaseeraColors.primaryGlow,
+                  size: 20,
+                ),
+                const SizedBox(width: 10),
                 Expanded(
                   child: Text(
                     isComplete
-                        ? '✓ All 4 actions completed successfully'
+                        ? 'All 4 actions completed successfully'
                         : 'Autonomous execution in progress...',
                     style: GoogleFonts.outfit(
                       fontSize: 14,
                       fontWeight: FontWeight.w600,
-                      color: isComplete ? colors.success : colors.primary,
+                      color: isComplete
+                          ? BaseeraColors.success
+                          : BaseeraColors.primaryGlow,
                     ),
                   ),
                 ),
               ],
             ),
           ),
-
-          // Steps
           Expanded(
             child: ListView(
               padding: const EdgeInsets.all(16),
@@ -92,35 +141,24 @@ class _ActionChainScreenState extends State<ActionChainScreen> {
                   final step = steps[index];
                   final isLast = index == steps.length - 1;
                   return _buildStepItem(
-                    context: context,
                     step: step,
                     isLast: isLast,
-                    colors: colors,
                   );
                 }),
-
                 const SizedBox(height: 16),
-
-                // Step 2 failure explanation
                 if (_hasStep2RetryOccurred(steps))
-                  _buildRetryExplanation(colors)
-                      .animate()
-                      .fadeIn(duration: 400.ms),
-
+                  _buildRetryExplanation().animate().fadeIn(duration: 400.ms),
                 const SizedBox(height: 16),
-
-                // Navigate to outcome
                 if (isComplete)
-                  ElevatedButton.icon(
+                  _gradientButton(
+                    icon: LucideIcons.barChart2,
+                    label: 'View Outcome Dashboard',
                     onPressed: () =>
                         Navigator.pushNamed(context, '/outcome'),
-                    icon: const Icon(Icons.dashboard_rounded),
-                    label: const Text('View Outcome Dashboard'),
                   )
                       .animate()
                       .fadeIn(delay: 200.ms)
                       .slideY(begin: 0.3, end: 0),
-
                 const SizedBox(height: 24),
               ],
             ),
@@ -138,39 +176,38 @@ class _ActionChainScreenState extends State<ActionChainScreen> {
   }
 
   Widget _buildStepItem({
-    required BuildContext context,
     required ActionStepModel step,
     required bool isLast,
-    required AppColors colors,
   }) {
     return IntrinsicHeight(
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          // Timeline column
           SizedBox(
             width: 48,
             child: Column(
               children: [
-                _buildStepIcon(step, colors),
+                _buildStepNumberCircle(step),
                 if (!isLast)
                   Expanded(
-                    child: Container(
-                      width: 2,
-                      margin: const EdgeInsets.symmetric(vertical: 4),
-                      color: _lineColor(step, colors),
+                    child: Padding(
+                      padding: const EdgeInsets.symmetric(vertical: 4),
+                      child: CustomPaint(
+                        size: const Size(2, double.infinity),
+                        painter: _DashedLinePainter(
+                          color: _lineColor(step),
+                        ),
+                      ),
                     ),
                   ),
               ],
             ),
           ),
           const SizedBox(width: 12),
-
-          // Content
           Expanded(
             child: Padding(
               padding: const EdgeInsets.only(bottom: 16),
-              child: _buildStepCard(context, step, colors),
+              child: _buildStepCard(step),
             ),
           ),
         ],
@@ -178,83 +215,77 @@ class _ActionChainScreenState extends State<ActionChainScreen> {
     );
   }
 
-  Widget _buildStepIcon(ActionStepModel step, AppColors colors) {
-    Widget child;
-    Color bg;
-    Color border;
-
-    switch (step.status) {
-      case StepStatus.pending:
-        child = Text(
-          '${step.step}',
-          style: GoogleFonts.outfit(
-            color: Colors.black38,
-            fontWeight: FontWeight.w700,
-          ),
-        );
-        bg = Colors.grey.shade100;
-        border = Colors.grey.shade300;
-      case StepStatus.running:
-        child = SizedBox(
-          width: 20,
-          height: 20,
-          child: CircularProgressIndicator(
-            strokeWidth: 2.5,
-            valueColor: AlwaysStoppedAnimation(colors.primary),
-          ),
-        );
-        bg = colors.primary.withValues(alpha: 0.1);
-        border = colors.primary;
-      case StepStatus.failed:
-        child = Icon(Icons.close_rounded, color: colors.error, size: 20);
-        bg = colors.error.withValues(alpha: 0.1);
-        border = colors.error;
-      case StepStatus.retrying:
-        child = Icon(Icons.refresh_rounded, color: colors.warning, size: 20);
-        bg = colors.warning.withValues(alpha: 0.1);
-        border = colors.warning;
-      case StepStatus.completed:
-        child = Icon(Icons.check_rounded, color: colors.success, size: 20);
-        bg = colors.success.withValues(alpha: 0.1);
-        border = colors.success;
-    }
-
+  Widget _buildStepNumberCircle(ActionStepModel step) {
     return Container(
       width: 44,
       height: 44,
       decoration: BoxDecoration(
-        color: bg,
+        gradient: const LinearGradient(
+          colors: [BaseeraColors.primary, BaseeraColors.primaryGlow],
+        ),
         shape: BoxShape.circle,
-        border: Border.all(color: border, width: 2),
+        boxShadow: [
+          BoxShadow(
+            color: BaseeraColors.primaryGlow.withValues(alpha: 0.4),
+            blurRadius: 10,
+            spreadRadius: 0,
+          ),
+        ],
       ),
-      child: Center(child: child),
+      child: Center(
+        child: Text(
+          '${step.step}',
+          style: GoogleFonts.outfit(
+            color: Colors.white,
+            fontSize: 18,
+            fontWeight: FontWeight.w800,
+          ),
+        ),
+      ),
     );
   }
 
-  Widget _buildStepCard(
-    BuildContext context,
-    ActionStepModel step,
-    AppColors colors,
-  ) {
-    final statusColor = _statusColor(step.status, colors);
+  Widget _buildStepCard(ActionStepModel step) {
+    final statusColor = _statusColor(step.status);
+    final isStep2 = step.step == 2;
+    final isFailedNow = step.status == StepStatus.failed;
+    final isRetrying = step.status == StepStatus.retrying;
+    final isCompleted = step.status == StepStatus.completed;
 
-    return Card(
-      margin: EdgeInsets.zero,
-      child: Padding(
-        padding: const EdgeInsets.all(16),
-        child: Column(
+    Color cardBg = BaseeraColors.surface;
+    if (isStep2 && (isFailedNow || isRetrying)) {
+      cardBg = BaseeraColors.redTint;
+    } else if (isStep2 && isCompleted) {
+      cardBg = BaseeraColors.greenTint;
+    }
+
+    return ClipRRect(
+      borderRadius: BorderRadius.circular(16),
+      child: AnimatedContainer(
+        duration: const Duration(milliseconds: 500),
+        color: cardBg,
+        child: Stack(
+          children: [
+            Positioned(
+              left: 0,
+              top: 0,
+              bottom: 0,
+              child: Container(width: 4, color: statusColor),
+            ),
+            Padding(
+              padding: const EdgeInsets.fromLTRB(20, 16, 16, 16),
+              child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            // Status row
             Row(
               children: [
                 Text(
                   'Step ${step.step}',
                   style: GoogleFonts.outfit(
-                    fontSize: 12,
+                    fontSize: 11,
                     fontWeight: FontWeight.w600,
-                    color: colors.primary.withValues(alpha: 0.6),
-                    letterSpacing: 0.5,
+                    color: BaseeraColors.textSecondary,
+                    letterSpacing: 0.8,
                   ),
                 ),
                 const Spacer(),
@@ -262,207 +293,217 @@ class _ActionChainScreenState extends State<ActionChainScreen> {
               ],
             ),
             const SizedBox(height: 8),
-
-            // Action description
             Text(
               step.action,
               style: GoogleFonts.outfit(
                 fontSize: 14,
                 fontWeight: FontWeight.w600,
-                color: Colors.black87,
+                color: BaseeraColors.textPrimary,
                 height: 1.4,
               ),
             ),
-
             const SizedBox(height: 8),
-
-            // Constraint
             if (step.constraint.isNotEmpty)
               Row(
                 children: [
-                  const Icon(Icons.schedule_rounded, size: 13, color: Colors.black38),
-                  const SizedBox(width: 4),
+                  const Icon(LucideIcons.info,
+                      size: 13, color: BaseeraColors.textSecondary),
+                  const SizedBox(width: 6),
                   Expanded(
                     child: Text(
                       step.constraint,
                       style: GoogleFonts.outfit(
                         fontSize: 12,
-                        color: Colors.black45,
+                        color: BaseeraColors.textSecondary,
                       ),
                     ),
                   ),
                 ],
               ),
-
-            // Error message
             if (step.status == StepStatus.failed && step.error != null) ...[
               const SizedBox(height: 10),
-              Container(
-                padding: const EdgeInsets.all(10),
-                decoration: BoxDecoration(
-                  color: colors.error.withValues(alpha: 0.06),
-                  borderRadius: BorderRadius.circular(8),
-                  border: Border.all(color: colors.error.withValues(alpha: 0.3)),
-                ),
-                child: Row(
-                  children: [
-                    Icon(Icons.error_outline_rounded,
-                        size: 16, color: colors.error),
-                    const SizedBox(width: 8),
-                    Expanded(
-                      child: Text(
-                        step.error!,
-                        style: GoogleFonts.outfit(
-                          fontSize: 12,
-                          color: colors.error,
-                        ),
-                      ),
-                    ),
-                  ],
-                ),
+              _noteBox(
+                icon: LucideIcons.xCircle,
+                color: BaseeraColors.error,
+                text: step.error!,
               ),
             ],
-
-            // Retrying message
             if (step.status == StepStatus.retrying) ...[
               const SizedBox(height: 10),
-              Container(
-                padding: const EdgeInsets.all(10),
-                decoration: BoxDecoration(
-                  color: colors.warning.withValues(alpha: 0.06),
-                  borderRadius: BorderRadius.circular(8),
-                  border: Border.all(color: colors.warning.withValues(alpha: 0.3)),
-                ),
-                child: Row(
-                  children: [
-                    Icon(Icons.refresh_rounded,
-                        size: 16, color: colors.warning),
-                    const SizedBox(width: 8),
-                    Text(
-                      'Retrying via email fallback channel...',
-                      style: GoogleFonts.outfit(
-                        fontSize: 12,
-                        color: colors.warning,
-                        fontWeight: FontWeight.w600,
-                      ),
-                    ),
-                  ],
-                ),
+              _noteBox(
+                icon: LucideIcons.refreshCw,
+                color: BaseeraColors.goldGlow,
+                text: 'Retrying via email fallback channel...',
+                spinIcon: true,
               ),
             ],
-
-            // Completion note
             if (step.status == StepStatus.completed &&
                 step.completionNote != null) ...[
               const SizedBox(height: 10),
-              Container(
-                padding: const EdgeInsets.all(10),
-                decoration: BoxDecoration(
-                  color: colors.success.withValues(alpha: 0.06),
-                  borderRadius: BorderRadius.circular(8),
-                  border: Border.all(color: colors.success.withValues(alpha: 0.3)),
-                ),
+              _noteBox(
+                icon: LucideIcons.checkCircle,
+                color: BaseeraColors.success,
+                text: step.completionNote!,
+              ),
+            ],
+            if (step.latencyMs != null && step.status == StepStatus.completed)
+              Padding(
+                padding: const EdgeInsets.only(top: 10),
                 child: Row(
                   children: [
-                    Icon(Icons.check_circle_rounded,
-                        size: 16, color: colors.success),
-                    const SizedBox(width: 8),
-                    Expanded(
-                      child: Text(
-                        step.completionNote!,
-                        style: GoogleFonts.outfit(
-                          fontSize: 12,
-                          color: colors.success,
-                        ),
+                    const Icon(LucideIcons.timer,
+                        size: 12, color: BaseeraColors.textSecondary),
+                    const SizedBox(width: 4),
+                    Text(
+                      '${step.latencyMs}ms',
+                      style: GoogleFonts.outfit(
+                        fontSize: 11,
+                        color: BaseeraColors.textSecondary,
                       ),
                     ),
                   ],
                 ),
               ),
-            ],
-
-            // Latency
-            if (step.latencyMs != null && step.status == StepStatus.completed)
-              Padding(
-                padding: const EdgeInsets.only(top: 8),
-                child: Text(
-                  '⏱ ${step.latencyMs}ms',
-                  style: GoogleFonts.outfit(
-                    fontSize: 11,
-                    color: Colors.black38,
-                  ),
-                ),
-              ),
           ],
-        ),
-      ),
-    )
-        .animate(target: step.status != StepStatus.pending ? 1 : 0)
-        .custom(
-          builder: (context, value, child) => child!,
-        );
-  }
-
-  Widget _buildStatusChip(StepStatus status, Color color) {
-    String icon;
-    switch (status) {
-      case StepStatus.pending:
-        icon = '🕐';
-      case StepStatus.running:
-        icon = '⟳';
-      case StepStatus.failed:
-        icon = '✗';
-      case StepStatus.retrying:
-        icon = '↺';
-      case StepStatus.completed:
-        icon = '✓';
-    }
-
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 3),
-      decoration: BoxDecoration(
-        color: color.withValues(alpha: 0.1),
-        borderRadius: BorderRadius.circular(20),
-        border: Border.all(color: color.withValues(alpha: 0.3)),
-      ),
-      child: Text(
-        '$icon ${status.label}',
-        style: GoogleFonts.outfit(
-          fontSize: 11,
-          fontWeight: FontWeight.w700,
-          color: color,
+              ),
+            ),
+          ],
         ),
       ),
     );
   }
 
-  Widget _buildRetryExplanation(AppColors colors) {
+  Widget _noteBox({
+    required IconData icon,
+    required Color color,
+    required String text,
+    bool spinIcon = false,
+  }) {
+    final iconWidget = Icon(icon, size: 16, color: color);
+    return Container(
+      padding: const EdgeInsets.all(10),
+      decoration: BoxDecoration(
+        color: color.withValues(alpha: 0.10),
+        borderRadius: BorderRadius.circular(10),
+        border: Border.all(color: color.withValues(alpha: 0.4)),
+      ),
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          spinIcon
+              ? AnimatedBuilder(
+                  animation: _spinController,
+                  builder: (_, __) => Transform.rotate(
+                    angle: _spinController.value * 2 * math.pi,
+                    child: iconWidget,
+                  ),
+                )
+              : iconWidget,
+          const SizedBox(width: 8),
+          Expanded(
+            child: Text(
+              text,
+              style: GoogleFonts.outfit(
+                fontSize: 12,
+                color: color,
+                fontWeight: FontWeight.w500,
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildStatusChip(StepStatus status, Color color) {
+    IconData icon;
+    bool spin = false;
+    switch (status) {
+      case StepStatus.pending:
+        icon = LucideIcons.clock;
+      case StepStatus.running:
+        icon = LucideIcons.loader;
+        spin = true;
+      case StepStatus.failed:
+        icon = LucideIcons.xCircle;
+      case StepStatus.retrying:
+        icon = LucideIcons.refreshCw;
+        spin = true;
+      case StepStatus.completed:
+        icon = LucideIcons.checkCircle;
+    }
+
+    Widget iconWidget = Icon(icon, color: color, size: 12);
+    if (spin) {
+      iconWidget = RotationTransition(
+        turns: _spinController,
+        child: iconWidget,
+      );
+    }
+
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+      decoration: BoxDecoration(
+        color: color.withValues(alpha: 0.15),
+        borderRadius: BorderRadius.circular(20),
+        border: Border.all(color: color.withValues(alpha: 0.5)),
+      ),
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Container(
+            width: 6,
+            height: 6,
+            decoration: BoxDecoration(
+              color: color,
+              shape: BoxShape.circle,
+            ),
+          ),
+          const SizedBox(width: 6),
+          iconWidget,
+          const SizedBox(width: 4),
+          Text(
+            status.label,
+            style: GoogleFonts.outfit(
+              fontSize: 10,
+              fontWeight: FontWeight.w700,
+              color: color,
+              letterSpacing: 0.3,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildRetryExplanation() {
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
         gradient: LinearGradient(
           colors: [
-            colors.success.withValues(alpha: 0.08),
-            colors.primary.withValues(alpha: 0.04),
+            BaseeraColors.primary.withValues(alpha: 0.15),
+            BaseeraColors.primaryGlow.withValues(alpha: 0.10),
           ],
         ),
         borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: colors.success.withValues(alpha: 0.3)),
+        border: Border.all(
+            color: BaseeraColors.primary.withValues(alpha: 0.4)),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Row(
             children: [
-              Icon(Icons.auto_fix_high_rounded,
-                  color: colors.success, size: 18),
+              const Icon(LucideIcons.sparkles,
+                  color: BaseeraColors.goldGlow, size: 18),
               const SizedBox(width: 8),
               Text(
                 'Autonomous Recovery Demonstrated',
                 style: GoogleFonts.outfit(
                   fontSize: 14,
                   fontWeight: FontWeight.w700,
-                  color: colors.success,
+                  color: BaseeraColors.goldGlow,
                 ),
               ),
             ],
@@ -474,7 +515,7 @@ class _ActionChainScreenState extends State<ActionChainScreen> {
             'the email fallback channel — completing the action without any human intervention.',
             style: GoogleFonts.outfit(
               fontSize: 13,
-              color: Colors.black87,
+              color: BaseeraColors.textPrimary,
               height: 1.5,
             ),
           ),
@@ -483,24 +524,101 @@ class _ActionChainScreenState extends State<ActionChainScreen> {
     );
   }
 
-  Color _statusColor(StepStatus status, AppColors colors) {
+  Color _statusColor(StepStatus status) {
     switch (status) {
       case StepStatus.pending:
-        return Colors.grey;
+        return BaseeraColors.textSecondary;
       case StepStatus.running:
-        return colors.primary;
+        return BaseeraColors.primaryGlow;
       case StepStatus.failed:
-        return colors.error;
+        return BaseeraColors.error;
       case StepStatus.retrying:
-        return colors.warning;
+        return BaseeraColors.goldGlow;
       case StepStatus.completed:
-        return colors.success;
+        return BaseeraColors.success;
     }
   }
 
-  Color _lineColor(ActionStepModel step, AppColors colors) {
-    if (step.status == StepStatus.completed) return colors.success;
-    if (step.status == StepStatus.running) return colors.primary;
-    return Colors.grey.shade200;
+  Color _lineColor(ActionStepModel step) {
+    if (step.status == StepStatus.completed) return BaseeraColors.success;
+    if (step.status == StepStatus.running) return BaseeraColors.primaryGlow;
+    if (step.status == StepStatus.failed) return BaseeraColors.error;
+    if (step.status == StepStatus.retrying) return BaseeraColors.goldGlow;
+    return BaseeraColors.border;
   }
+
+  Widget _gradientButton({
+    required IconData icon,
+    required String label,
+    required VoidCallback onPressed,
+  }) {
+    return Material(
+      color: Colors.transparent,
+      child: InkWell(
+        onTap: onPressed,
+        borderRadius: BorderRadius.circular(16),
+        child: Container(
+          width: double.infinity,
+          height: 52,
+          decoration: BoxDecoration(
+            gradient: const LinearGradient(
+              colors: [BaseeraColors.primary, BaseeraColors.primaryGlow],
+            ),
+            borderRadius: BorderRadius.circular(16),
+            boxShadow: [
+              BoxShadow(
+                color: BaseeraColors.primaryGlow.withValues(alpha: 0.4),
+                blurRadius: 16,
+                spreadRadius: 0,
+              ),
+            ],
+          ),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Icon(icon, color: Colors.white, size: 20),
+              const SizedBox(width: 10),
+              Text(
+                label,
+                style: GoogleFonts.outfit(
+                  color: Colors.white,
+                  fontSize: 15,
+                  fontWeight: FontWeight.w700,
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+class _DashedLinePainter extends CustomPainter {
+  final Color color;
+  _DashedLinePainter({required this.color});
+
+  @override
+  void paint(Canvas canvas, Size size) {
+    const dashH = 4.0;
+    const gap = 4.0;
+    final paint = Paint()
+      ..color = color
+      ..strokeWidth = 2
+      ..style = PaintingStyle.stroke;
+
+    double startY = 0;
+    while (startY < size.height) {
+      canvas.drawLine(
+        Offset(size.width / 2, startY),
+        Offset(size.width / 2, startY + dashH),
+        paint,
+      );
+      startY += dashH + gap;
+    }
+  }
+
+  @override
+  bool shouldRepaint(covariant _DashedLinePainter old) =>
+      old.color != color;
 }

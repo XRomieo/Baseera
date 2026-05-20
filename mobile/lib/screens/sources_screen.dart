@@ -1,11 +1,12 @@
 // screens/sources_screen.dart
 // Screen 2: Data Sources
-// Shows 5 source cards with shimmer loading, credibility badges,
-// and a contradiction detection card at the bottom.
+// Royal dark theme: surface cards with purple left border, Lucide source icons,
+// shield credibility badges, glowing contradiction card.
 
 import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:lucide_icons_flutter/lucide_icons.dart';
 import 'package:provider/provider.dart';
 import 'package:shimmer/shimmer.dart';
 
@@ -24,7 +25,6 @@ class SourcesScreen extends StatelessWidget {
     'market_news_feed.json',
   ];
 
-  static const _sourceIcons = ['📊', '📧', '📈', '⚠️', '📰'];
   static const _sourceLabels = [
     'Warehouse Stock',
     'Supplier Email',
@@ -33,17 +33,42 @@ class SourcesScreen extends StatelessWidget {
     'Market News Feed',
   ];
 
+  // Lucide icon + accent color per source slot
+  static const _sourceIconData = <_SourceIcon>[
+    _SourceIcon(LucideIcons.fileSpreadsheet, BaseeraColors.gold),
+    _SourceIcon(LucideIcons.fileJson, BaseeraColors.primaryGlow),
+    _SourceIcon(LucideIcons.barChart2, BaseeraColors.primaryGlow),
+    _SourceIcon(LucideIcons.mail, BaseeraColors.success),
+    _SourceIcon(LucideIcons.newspaper, BaseeraColors.warning),
+  ];
+
   @override
   Widget build(BuildContext context) {
-    final colors = Theme.of(context).extension<AppColors>()!;
     final provider = context.watch<AnalysisProvider>();
     final result = provider.analysisResult;
 
     return Scaffold(
+      backgroundColor: BaseeraColors.bg,
       appBar: AppBar(
-        title: const Text('Data Sources'),
+        title: Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            const Icon(LucideIcons.eye,
+                color: BaseeraColors.primaryGlow, size: 20),
+            const SizedBox(width: 8),
+            Text(
+              'Data Sources',
+              style: GoogleFonts.outfit(
+                fontSize: 18,
+                fontWeight: FontWeight.w700,
+                color: BaseeraColors.textPrimary,
+              ),
+            ),
+          ],
+        ),
         leading: IconButton(
-          icon: const Icon(Icons.arrow_back_rounded),
+          icon: const Icon(LucideIcons.arrowLeft,
+              color: BaseeraColors.primaryGlow),
           onPressed: () => Navigator.pop(context),
         ),
         actions: [
@@ -52,19 +77,29 @@ class SourcesScreen extends StatelessWidget {
               padding: const EdgeInsets.only(right: 12),
               child: Center(
                 child: Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
                   decoration: BoxDecoration(
-                    color: colors.warning.withValues(alpha: 0.2),
+                    color: BaseeraColors.warning.withValues(alpha: 0.15),
                     borderRadius: BorderRadius.circular(10),
-                    border: Border.all(color: colors.warning),
+                    border: Border.all(
+                        color: BaseeraColors.warning.withValues(alpha: 0.5)),
                   ),
-                  child: Text(
-                    '⚠ Demo',
-                    style: GoogleFonts.outfit(
-                      color: colors.warning,
-                      fontSize: 11,
-                      fontWeight: FontWeight.w700,
-                    ),
+                  child: Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      const Icon(LucideIcons.alertTriangle,
+                          color: BaseeraColors.warning, size: 11),
+                      const SizedBox(width: 4),
+                      Text(
+                        'Demo',
+                        style: GoogleFonts.outfit(
+                          color: BaseeraColors.warning,
+                          fontSize: 11,
+                          fontWeight: FontWeight.w700,
+                        ),
+                      ),
+                    ],
                   ),
                 ),
               ),
@@ -74,17 +109,15 @@ class SourcesScreen extends StatelessWidget {
       body: ListView(
         padding: const EdgeInsets.all(16),
         children: [
-          // Header
           _buildHeader(context, provider),
           const SizedBox(height: 16),
-
-          // Source cards
           ...List.generate(5, (index) {
             final isProcessed = provider.sourcesProcessed[index];
             final isProcessing = provider.currentlyProcessingSource == index;
-            final sourceData = result != null && result.sourcesSummary.length > index
-                ? result.sourcesSummary[index]
-                : null;
+            final sourceData =
+                result != null && result.sourcesSummary.length > index
+                    ? result.sourcesSummary[index]
+                    : null;
 
             return Padding(
               padding: const EdgeInsets.only(bottom: 12),
@@ -94,36 +127,26 @@ class SourcesScreen extends StatelessWidget {
                 isProcessed: isProcessed,
                 isProcessing: isProcessing,
                 sourceData: sourceData,
-                colors: colors,
               ),
             );
           }),
-
           const SizedBox(height: 8),
-
-          // Contradictions section
           if (result != null && result.contradictions.isNotEmpty) ...[
-            _buildContradictionsSection(context, result.contradictions, colors),
+            _buildContradictionsSection(context, result.contradictions),
             const SizedBox(height: 16),
           ],
-
-          // Key insights
           if (result != null && result.keyInsights.isNotEmpty)
-            _buildKeyInsights(context, result.keyInsights, colors),
-
+            _buildKeyInsights(context, result.keyInsights),
           const SizedBox(height: 16),
-
-          // Next button
           if (result != null)
-            ElevatedButton.icon(
+            _gradientButton(
+              icon: LucideIcons.gitBranch,
+              label: 'Execute Action Chain',
               onPressed: () => Navigator.pushNamed(context, '/action-chain'),
-              icon: const Icon(Icons.play_circle_filled_rounded),
-              label: const Text('Execute Action Chain'),
             )
                 .animate()
                 .fadeIn(delay: 300.ms)
                 .slideY(begin: 0.3, end: 0),
-
           const SizedBox(height: 24),
         ],
       ),
@@ -137,24 +160,32 @@ class SourcesScreen extends StatelessWidget {
       children: [
         Text(
           '5 Sources Analyzed',
-          style: Theme.of(context).textTheme.displaySmall,
+          style: GoogleFonts.outfit(
+            fontSize: 22,
+            fontWeight: FontWeight.w700,
+            color: BaseeraColors.textPrimary,
+          ),
         ),
         const SizedBox(height: 4),
         Text(
           result != null
               ? 'Analysis complete in ${result.latencyMs}ms · ${result.contradictions.length} contradiction(s) detected'
               : 'Loading data sources...',
-          style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                color: Colors.black54,
-              ),
+          style: GoogleFonts.outfit(
+            fontSize: 13,
+            color: BaseeraColors.textSecondary,
+          ),
         ),
         if (result != null) ...[
-          const SizedBox(height: 8),
-          LinearProgressIndicator(
-            value: 1.0,
-            backgroundColor: Colors.grey.shade200,
-            valueColor: AlwaysStoppedAnimation(
-              Theme.of(context).extension<AppColors>()!.success,
+          const SizedBox(height: 10),
+          ClipRRect(
+            borderRadius: BorderRadius.circular(4),
+            child: LinearProgressIndicator(
+              value: 1.0,
+              backgroundColor: BaseeraColors.border,
+              valueColor:
+                  const AlwaysStoppedAnimation(BaseeraColors.success),
+              minHeight: 6,
             ),
           ),
         ],
@@ -168,58 +199,106 @@ class SourcesScreen extends StatelessWidget {
     required bool isProcessed,
     required bool isProcessing,
     required SourceModel? sourceData,
-    required AppColors colors,
   }) {
-    // Processed always wins — even if currentlyProcessingSource still points here
     if (isProcessed) {
       return _buildProcessedCard(
         context: context,
         index: index,
         sourceData: sourceData,
-        colors: colors,
       )
           .animate()
           .fadeIn(duration: 400.ms)
           .slideX(begin: -0.1, end: 0);
     }
-
-    if (isProcessing) {
-      // Actively fetching — show shimmer
-      return _buildShimmerCard();
-    }
-
-    // Not yet reached — grey placeholder
+    if (isProcessing) return _buildShimmerCard();
     return _buildPendingCard(context, index);
   }
 
+  Widget _cardShell({
+    required Widget child,
+    Color borderColor = BaseeraColors.primary,
+    double leftBorderWidth = 4,
+  }) {
+    return ClipRRect(
+      borderRadius: BorderRadius.circular(12),
+      child: Container(
+        color: BaseeraColors.surface,
+        child: Stack(
+          children: [
+            Positioned(
+              left: 0,
+              top: 0,
+              bottom: 0,
+              child: Container(width: leftBorderWidth, color: borderColor),
+            ),
+            Padding(
+              padding: EdgeInsets.only(left: leftBorderWidth),
+              child: child,
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
   Widget _buildPendingCard(BuildContext context, int index) {
-    return Card(
-      child: ListTile(
-        leading: Text(
-          _sourceIcons[index],
-          style: const TextStyle(fontSize: 28),
+    final iconData = _sourceIconData[index];
+    return _cardShell(
+      borderColor: BaseeraColors.border,
+      leftBorderWidth: 4,
+      child: Padding(
+        padding: const EdgeInsets.all(14),
+        child: Row(
+          children: [
+            Container(
+              width: 44,
+              height: 44,
+              decoration: BoxDecoration(
+                color: BaseeraColors.bg,
+                borderRadius: BorderRadius.circular(10),
+                border: Border.all(color: BaseeraColors.border),
+              ),
+              child: Icon(iconData.icon,
+                  color: iconData.color.withValues(alpha: 0.5), size: 22),
+            ),
+            const SizedBox(width: 12),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    _sourceNames[index],
+                    style: GoogleFonts.outfit(
+                      fontWeight: FontWeight.w600,
+                      fontSize: 14,
+                      color: BaseeraColors.textSecondary,
+                    ),
+                  ),
+                  Text(
+                    'Waiting...',
+                    style: GoogleFonts.outfit(
+                      color: BaseeraColors.textSecondary
+                          .withValues(alpha: 0.7),
+                      fontSize: 12,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            const Icon(LucideIcons.clock,
+                color: BaseeraColors.textSecondary, size: 16),
+          ],
         ),
-        title: Text(
-          _sourceNames[index],
-          style: GoogleFonts.outfit(
-            fontWeight: FontWeight.w600,
-            color: Colors.black54,
-          ),
-        ),
-        subtitle: Text(
-          'Waiting...',
-          style: GoogleFonts.outfit(color: Colors.black38, fontSize: 13),
-        ),
-        trailing: const Icon(Icons.access_time, color: Colors.black26),
       ),
     );
   }
 
   Widget _buildShimmerCard() {
     return Shimmer.fromColors(
-      baseColor: Colors.grey.shade300,
-      highlightColor: Colors.grey.shade100,
-      child: Card(
+      baseColor: BaseeraColors.shimmerBase,
+      highlightColor: BaseeraColors.shimmerHi,
+      child: _cardShell(
+        borderColor: BaseeraColors.primary,
         child: Padding(
           padding: const EdgeInsets.all(16),
           child: Column(
@@ -228,43 +307,45 @@ class SourcesScreen extends StatelessWidget {
               Row(
                 children: [
                   Container(
-                    width: 40,
-                    height: 40,
-                    decoration: const BoxDecoration(
-                      color: Colors.white,
-                      shape: BoxShape.circle,
+                    width: 44,
+                    height: 44,
+                    decoration: BoxDecoration(
+                      color: BaseeraColors.shimmerHi,
+                      borderRadius: BorderRadius.circular(10),
                     ),
                   ),
                   const SizedBox(width: 12),
-                  Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Container(
-                        width: 150,
-                        height: 14,
-                        color: Colors.white,
-                      ),
-                      const SizedBox(height: 6),
-                      Container(
-                        width: 100,
-                        height: 12,
-                        color: Colors.white,
-                      ),
-                    ],
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Container(
+                          width: 150,
+                          height: 12,
+                          color: BaseeraColors.shimmerHi,
+                        ),
+                        const SizedBox(height: 6),
+                        Container(
+                          width: 100,
+                          height: 10,
+                          color: BaseeraColors.shimmerHi,
+                        ),
+                      ],
+                    ),
                   ),
                 ],
               ),
               const SizedBox(height: 12),
               Container(
                 width: double.infinity,
-                height: 12,
-                color: Colors.white,
+                height: 10,
+                color: BaseeraColors.shimmerHi,
               ),
               const SizedBox(height: 6),
               Container(
                 width: 200,
-                height: 12,
-                color: Colors.white,
+                height: 10,
+                color: BaseeraColors.shimmerHi,
               ),
             ],
           ),
@@ -277,34 +358,30 @@ class SourcesScreen extends StatelessWidget {
     required BuildContext context,
     required int index,
     required SourceModel? sourceData,
-    required AppColors colors,
   }) {
     final credibility = sourceData?.credibility ?? SourceCredibility.medium;
-    final credColor = _credibilityColor(credibility, colors);
-    final credIcon = _credibilityIcon(credibility);
+    final cred = _credInfo(credibility);
+    final iconData = _sourceIconData[index];
 
-    return Card(
+    return _cardShell(
+      borderColor: BaseeraColors.primary,
       child: Padding(
-        padding: const EdgeInsets.all(16),
+        padding: const EdgeInsets.all(14),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Row(
               children: [
-                // Source icon
                 Container(
                   width: 48,
                   height: 48,
                   decoration: BoxDecoration(
-                    color: colors.primary.withValues(alpha: 0.08),
+                    color: iconData.color.withValues(alpha: 0.12),
                     borderRadius: BorderRadius.circular(12),
+                    border: Border.all(
+                        color: iconData.color.withValues(alpha: 0.3)),
                   ),
-                  child: Center(
-                    child: Text(
-                      _sourceIcons[index],
-                      style: const TextStyle(fontSize: 24),
-                    ),
-                  ),
+                  child: Icon(iconData.icon, color: iconData.color, size: 24),
                 ),
                 const SizedBox(width: 12),
                 Expanded(
@@ -316,59 +393,56 @@ class SourcesScreen extends StatelessWidget {
                         style: GoogleFonts.outfit(
                           fontWeight: FontWeight.w700,
                           fontSize: 14,
-                          color: colors.primary,
+                          color: BaseeraColors.textPrimary,
                         ),
                       ),
                       Text(
                         _sourceLabels[index],
                         style: GoogleFonts.outfit(
-                          color: Colors.black54,
+                          color: BaseeraColors.textSecondary,
                           fontSize: 12,
                         ),
                       ),
                     ],
                   ),
                 ),
-                // Credibility badge
-                _buildCredibilityBadge(
-                  credibility,
-                  credColor,
-                  credIcon,
-                ),
+                _buildCredibilityBadge(credibility, cred),
               ],
             ),
             if (sourceData != null) ...[
               const SizedBox(height: 12),
-              const Divider(height: 1),
+              const Divider(height: 1, color: BaseeraColors.border),
               const SizedBox(height: 12),
               Text(
                 sourceData.keyInsight,
                 style: GoogleFonts.outfit(
                   fontSize: 13,
-                  color: Colors.black87,
+                  color: BaseeraColors.textPrimary,
                   height: 1.5,
                 ),
               ),
-              const SizedBox(height: 8),
+              const SizedBox(height: 10),
               Row(
                 children: [
-                  const Icon(Icons.access_time_rounded, size: 14, color: Colors.black38),
+                  const Icon(LucideIcons.clock,
+                      size: 13, color: BaseeraColors.textSecondary),
                   const SizedBox(width: 4),
                   Text(
                     sourceData.recency,
                     style: GoogleFonts.outfit(
                       fontSize: 11,
-                      color: Colors.black38,
+                      color: BaseeraColors.textSecondary,
                     ),
                   ),
                   const Spacer(),
-                  Icon(Icons.check_circle, size: 16, color: colors.success),
+                  const Icon(LucideIcons.checkCircle,
+                      size: 14, color: BaseeraColors.success),
                   const SizedBox(width: 4),
                   Text(
                     'Processed',
                     style: GoogleFonts.outfit(
                       fontSize: 11,
-                      color: colors.success,
+                      color: BaseeraColors.success,
                       fontWeight: FontWeight.w600,
                     ),
                   ),
@@ -383,25 +457,24 @@ class SourcesScreen extends StatelessWidget {
 
   Widget _buildCredibilityBadge(
     SourceCredibility credibility,
-    Color color,
-    String icon,
+    _CredInfo info,
   ) {
     return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
       decoration: BoxDecoration(
-        color: color.withValues(alpha: 0.1),
+        color: info.color.withValues(alpha: 0.2),
         borderRadius: BorderRadius.circular(20),
-        border: Border.all(color: color.withValues(alpha: 0.4)),
+        border: Border.all(color: info.color.withValues(alpha: 0.4)),
       ),
       child: Row(
         mainAxisSize: MainAxisSize.min,
         children: [
-          Text(icon, style: const TextStyle(fontSize: 11)),
+          Icon(info.icon, color: info.color, size: 12),
           const SizedBox(width: 4),
           Text(
             credibility.label,
             style: GoogleFonts.outfit(
-              color: color,
+              color: info.color,
               fontSize: 11,
               fontWeight: FontWeight.w700,
             ),
@@ -414,50 +487,56 @@ class SourcesScreen extends StatelessWidget {
   Widget _buildContradictionsSection(
     BuildContext context,
     List contradictions,
-    AppColors colors,
   ) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Row(
           children: [
-            Icon(Icons.warning_rounded, color: colors.error, size: 20),
+            const Icon(LucideIcons.alertTriangle,
+                color: BaseeraColors.error, size: 20),
             const SizedBox(width: 8),
             Text(
               '${contradictions.length} Contradiction(s) Detected',
               style: GoogleFonts.outfit(
                 fontSize: 16,
                 fontWeight: FontWeight.w700,
-                color: colors.error,
+                color: BaseeraColors.error,
               ),
             ),
           ],
         ),
-        const SizedBox(height: 8),
+        const SizedBox(height: 10),
         ...contradictions.map(
           (c) => Padding(
-            padding: const EdgeInsets.only(bottom: 8),
+            padding: const EdgeInsets.only(bottom: 10),
             child: Container(
               width: double.infinity,
               padding: const EdgeInsets.all(16),
               decoration: BoxDecoration(
-                color: colors.error.withValues(alpha: 0.04),
-                borderRadius: BorderRadius.circular(16),
-                border: Border.all(color: colors.error.withValues(alpha: 0.3)),
+                color: BaseeraColors.redTint,
+                borderRadius: BorderRadius.circular(12),
+                border: Border.all(color: BaseeraColors.error, width: 1),
+                boxShadow: [
+                  BoxShadow(
+                    color: BaseeraColors.error.withValues(alpha: 0.3),
+                    blurRadius: 12,
+                    spreadRadius: 0,
+                  ),
+                ],
               ),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  // Sources in conflict
                   Row(
                     children: [
-                      Flexible(child: _conflictSourceChip(c.sourceA, colors)),
-                      Padding(
-                        padding: const EdgeInsets.symmetric(horizontal: 8),
-                        child: Icon(Icons.sync_alt_rounded,
-                            size: 16, color: colors.error),
+                      Flexible(child: _conflictSourceChip(c.sourceA)),
+                      const Padding(
+                        padding: EdgeInsets.symmetric(horizontal: 8),
+                        child: Icon(LucideIcons.arrowLeftRight,
+                            size: 16, color: BaseeraColors.error),
                       ),
-                      Flexible(child: _conflictSourceChip(c.sourceB, colors)),
+                      Flexible(child: _conflictSourceChip(c.sourceB)),
                     ],
                   ),
                   const SizedBox(height: 10),
@@ -465,24 +544,24 @@ class SourcesScreen extends StatelessWidget {
                     c.conflict,
                     style: GoogleFonts.outfit(
                       fontSize: 13,
-                      color: Colors.black87,
+                      color: BaseeraColors.textPrimary,
                       height: 1.4,
                     ),
                   ),
-                  const SizedBox(height: 8),
+                  const SizedBox(height: 10),
                   Container(
                     padding: const EdgeInsets.all(10),
                     decoration: BoxDecoration(
-                      color: colors.success.withValues(alpha: 0.08),
-                      borderRadius: BorderRadius.circular(8),
-                      border:
-                          Border.all(color: colors.success.withValues(alpha: 0.3)),
+                      color: BaseeraColors.success.withValues(alpha: 0.10),
+                      borderRadius: BorderRadius.circular(10),
+                      border: Border.all(
+                          color: BaseeraColors.success.withValues(alpha: 0.4)),
                     ),
                     child: Row(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Icon(Icons.check_circle_outline,
-                            size: 16, color: colors.success),
+                        const Icon(LucideIcons.checkCircle,
+                            size: 16, color: BaseeraColors.success),
                         const SizedBox(width: 6),
                         Expanded(
                           child: Column(
@@ -493,24 +572,33 @@ class SourcesScreen extends StatelessWidget {
                                 style: GoogleFonts.outfit(
                                   fontSize: 11,
                                   fontWeight: FontWeight.w700,
-                                  color: colors.success,
+                                  color: BaseeraColors.success,
                                 ),
                               ),
                               Text(
                                 c.resolution,
                                 style: GoogleFonts.outfit(
                                   fontSize: 12,
-                                  color: Colors.black87,
+                                  color: BaseeraColors.textPrimary,
                                   height: 1.4,
                                 ),
                               ),
-                              Text(
-                                '✓ Winner: ${c.credibilityWinner}',
-                                style: GoogleFonts.outfit(
-                                  fontSize: 11,
-                                  fontWeight: FontWeight.w700,
-                                  color: colors.success,
-                                ),
+                              const SizedBox(height: 4),
+                              Row(
+                                children: [
+                                  const Icon(LucideIcons.award,
+                                      size: 12,
+                                      color: BaseeraColors.gold),
+                                  const SizedBox(width: 4),
+                                  Text(
+                                    'Winner: ${c.credibilityWinner}',
+                                    style: GoogleFonts.outfit(
+                                      fontSize: 11,
+                                      fontWeight: FontWeight.w700,
+                                      color: BaseeraColors.gold,
+                                    ),
+                                  ),
+                                ],
                               ),
                             ],
                           ),
@@ -527,19 +615,19 @@ class SourcesScreen extends StatelessWidget {
     );
   }
 
-  Widget _conflictSourceChip(String source, AppColors colors) {
+  Widget _conflictSourceChip(String source) {
     return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
+      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
       decoration: BoxDecoration(
-        color: colors.error.withValues(alpha: 0.1),
+        color: BaseeraColors.error.withValues(alpha: 0.15),
         borderRadius: BorderRadius.circular(8),
-        border: Border.all(color: colors.error.withValues(alpha: 0.3)),
+        border: Border.all(color: BaseeraColors.error.withValues(alpha: 0.4)),
       ),
       child: Text(
         source,
         style: GoogleFonts.outfit(
           fontSize: 11,
-          color: colors.error,
+          color: BaseeraColors.error,
           fontWeight: FontWeight.w600,
         ),
       ),
@@ -549,50 +637,52 @@ class SourcesScreen extends StatelessWidget {
   Widget _buildKeyInsights(
     BuildContext context,
     List<String> insights,
-    AppColors colors,
   ) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text(
-          '🔑 Key Insights',
-          style: GoogleFonts.outfit(
-            fontSize: 16,
-            fontWeight: FontWeight.w700,
-            color: colors.primary,
-          ),
+        Row(
+          children: [
+            const Icon(LucideIcons.key,
+                color: BaseeraColors.gold, size: 18),
+            const SizedBox(width: 8),
+            Text(
+              'Key Insights',
+              style: GoogleFonts.outfit(
+                fontSize: 16,
+                fontWeight: FontWeight.w700,
+                color: BaseeraColors.textPrimary,
+              ),
+            ),
+          ],
         ),
-        const SizedBox(height: 8),
+        const SizedBox(height: 10),
         Container(
           padding: const EdgeInsets.all(16),
           decoration: BoxDecoration(
-            color: colors.primary.withValues(alpha: 0.04),
+            color: BaseeraColors.surface,
             borderRadius: BorderRadius.circular(16),
-            border: Border.all(color: colors.primary.withValues(alpha: 0.15)),
+            border: Border.all(color: BaseeraColors.border, width: 0.5),
           ),
           child: Column(
             children: insights
                 .map(
                   (insight) => Padding(
-                    padding: const EdgeInsets.only(bottom: 8),
+                    padding: const EdgeInsets.only(bottom: 10),
                     child: Row(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Text(
-                          '•',
-                          style: TextStyle(
-                            color: colors.primary,
-                            fontSize: 16,
-                            fontWeight: FontWeight.w700,
-                          ),
+                        const Padding(
+                          padding: EdgeInsets.only(top: 4),
+                          child: Icon(LucideIcons.dot,
+                              color: BaseeraColors.primaryGlow, size: 16),
                         ),
-                        const SizedBox(width: 8),
                         Expanded(
                           child: Text(
                             insight,
                             style: GoogleFonts.outfit(
                               fontSize: 13,
-                              color: Colors.black87,
+                              color: BaseeraColors.textPrimary,
                               height: 1.4,
                             ),
                           ),
@@ -608,29 +698,75 @@ class SourcesScreen extends StatelessWidget {
     );
   }
 
-  Color _credibilityColor(SourceCredibility cred, AppColors colors) {
+  _CredInfo _credInfo(SourceCredibility cred) {
     switch (cred) {
       case SourceCredibility.high:
-        return colors.success;
+        return const _CredInfo(BaseeraColors.success, LucideIcons.shieldCheck);
       case SourceCredibility.medium:
-        return colors.warning;
+        return const _CredInfo(BaseeraColors.warning, LucideIcons.shield);
       case SourceCredibility.low:
-        return colors.error;
+        return const _CredInfo(BaseeraColors.error, LucideIcons.shieldOff);
       case SourceCredibility.stale:
-        return const Color(0xFFE65100);
+        return const _CredInfo(
+            BaseeraColors.textSecondary, LucideIcons.clock);
     }
   }
 
-  String _credibilityIcon(SourceCredibility cred) {
-    switch (cred) {
-      case SourceCredibility.high:
-        return '✓';
-      case SourceCredibility.medium:
-        return 'ℹ';
-      case SourceCredibility.low:
-        return '⚠';
-      case SourceCredibility.stale:
-        return '🕐';
-    }
+  Widget _gradientButton({
+    required IconData icon,
+    required String label,
+    required VoidCallback onPressed,
+  }) {
+    return Material(
+      color: Colors.transparent,
+      child: InkWell(
+        onTap: onPressed,
+        borderRadius: BorderRadius.circular(16),
+        child: Container(
+          width: double.infinity,
+          height: 52,
+          decoration: BoxDecoration(
+            gradient: const LinearGradient(
+              colors: [BaseeraColors.primary, BaseeraColors.primaryGlow],
+            ),
+            borderRadius: BorderRadius.circular(16),
+            boxShadow: [
+              BoxShadow(
+                color: BaseeraColors.primaryGlow.withValues(alpha: 0.4),
+                blurRadius: 16,
+                spreadRadius: 0,
+              ),
+            ],
+          ),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Icon(icon, color: Colors.white, size: 20),
+              const SizedBox(width: 10),
+              Text(
+                label,
+                style: GoogleFonts.outfit(
+                  color: Colors.white,
+                  fontSize: 15,
+                  fontWeight: FontWeight.w700,
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
   }
+}
+
+class _SourceIcon {
+  final IconData icon;
+  final Color color;
+  const _SourceIcon(this.icon, this.color);
+}
+
+class _CredInfo {
+  final Color color;
+  final IconData icon;
+  const _CredInfo(this.color, this.icon);
 }
