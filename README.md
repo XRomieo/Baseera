@@ -235,6 +235,42 @@ Icons: **Lucide** exclusively. Zero emoji glyphs in the codebase.
 
 ---
 
+## Constraint-Based Decision-Making
+
+Every action in the chain carries explicit constraints which Gemini attaches and assesses:
+
+| Field | Type | Purpose |
+|---|---|---|
+| `budget_pkr` | int | Spending ceiling in PKR (0 = no spend) |
+| `deadline` | string | Hard deadline (e.g. "2 hours", "Continuous") |
+| `urgency` | HIGH / MEDIUM / LOW | Triage priority |
+| `rate_limit` | string | API quota or dispatch limit (e.g. "SMS gateway 100 msg/min") |
+| `feasibility` | FEASIBLE / MODIFIED / INFEASIBLE | Agent's own assessment against budget + rate limit |
+
+If a step would violate its budget or rate limit, the agent must mark it `MODIFIED` (reduced scope) or `INFEASIBLE` (skip) — silent violations are explicitly forbidden in the system prompt. The Flutter action chain renders these as colored chips beside each step so the constraint reasoning is visible at a glance.
+
+---
+
+## Baseline Comparison — Rule-Based vs Agentic
+
+A naive rule-based system handling the same 5 sources would:
+
+| Step | Rule-Based Baseline | Baseera (Agentic) |
+|---|---|---|
+| 1. Ingest | Read CSV → "1,200 units in stock" | Read all 5 sources in parallel |
+| 2. Decide | Trust CSV (highest "structured" weight) | Score credibility per source, flag CSV as STALE (3 days) |
+| 3. Detect contradiction | Cannot — single source of truth | Cross-references sales velocity, complaint spike, supplier email |
+| 4. Resolve | N/A (no conflict detected) | Picks `customer_complaints` + `sales_dashboard` over CSV by recency + corroboration |
+| 5. Action | None ("stock is healthy") | 4-step constrained recovery plan |
+| 6. Failure handling | Crash on supplier API timeout | Detects timeout, retries via email fallback |
+| 7. Constraints | None | Per-step budget, deadline, urgency, rate-limit, feasibility |
+| **Stockout risk** | **Stays at 87%** | **Drops to 12%** |
+| **Revenue at risk** | **PKR 87,050/day lost** | **PKR 261,150 saved over 3 days** |
+
+The baseline fails the central test of the challenge: contradiction detection. A static rule that trusts the most "structured" source misses every signal that disagrees with it. Agency is the difference between "summarize what you see" and "reason about which inputs you should trust, then act on that reasoning."
+
+---
+
 ## Hackathon Context
 
 **Challenge 1 — Autonomous Content-to-Action Agent**

@@ -83,28 +83,48 @@ FALLBACK_RESPONSE = {
             "step": 1,
             "action": "Conduct emergency physical stock audit at Warehouse-A Shelf-12 for Basmati Rice 5kg",
             "status": "pending",
-            "constraint": "Must be completed within 2 hours to allow same-day decision-making",
+            "constraint": "Audit must complete within 2 hours; 2 staff dispatched; no monetary cost",
+            "budget_pkr": 0,
+            "deadline": "2 hours",
+            "urgency": "HIGH",
+            "rate_limit": "None — internal operation",
+            "feasibility": "FEASIBLE",
             "rationale": "Contradictions between warehouse CSV and customer complaints require ground-truth verification before any other action can be reliably taken."
         },
         {
             "step": 2,
             "action": "Contact Ahmed Traders and activate emergency procurement from alternative supplier in Karachi",
             "status": "pending",
-            "constraint": "Emergency order budget ceiling: PKR 500,000 | Must be placed within 4 hours",
+            "constraint": "Emergency order ceiling PKR 500,000; place within 4 hours; supplier API quota 60 req/hr",
+            "budget_pkr": 500000,
+            "deadline": "4 hours",
+            "urgency": "HIGH",
+            "rate_limit": "Supplier API 60 req/hr — within ceiling",
+            "feasibility": "FEASIBLE",
             "rationale": "Primary supplier (Ahmed Traders) has confirmed 5-day delay. Alternative suppliers in unaffected regions (Karachi, Sindh) should be contacted immediately to bridge the supply gap."
         },
         {
             "step": 3,
             "action": "Update website and app to show accurate stock status and notify 847 affected customers via SMS/email",
             "status": "pending",
-            "constraint": "Customer notifications must go out within 4 hours of decision | Include updated delivery estimate",
+            "constraint": "Notifications dispatched in 4 hours; SMS gateway PKR 1.50/msg = PKR 1,270; rate limit 100 msg/min",
+            "budget_pkr": 1270,
+            "deadline": "4 hours",
+            "urgency": "HIGH",
+            "rate_limit": "SMS gateway 100 msg/min — 847 msgs in ~9 min",
+            "feasibility": "FEASIBLE",
             "rationale": "47 customers have already complained. Proactive notification to all recent buyers prevents further churn and demonstrates transparency."
         },
         {
             "step": 4,
             "action": "Activate 24-hour automated inventory monitoring for all fast-moving staples",
             "status": "pending",
-            "constraint": "Check interval: every 30 minutes | Alert threshold: stock drops below 3-day buffer",
+            "constraint": "Polls every 30 min; alert below 3-day buffer; infra cost PKR 800/mo; ongoing job",
+            "budget_pkr": 800,
+            "deadline": "Continuous (24/7)",
+            "urgency": "MEDIUM",
+            "rate_limit": "Internal cron — 48 polls/day",
+            "feasibility": "FEASIBLE",
             "rationale": "The root cause was stale warehouse data (3 days old) being used as ground truth. Automated monitoring prevents this from recurring."
         }
     ],
@@ -277,6 +297,12 @@ def _build_system_instruction() -> str:
         "- The action_chain must have EXACTLY 4 steps, numbered 1 through 4.\n"
         "- All action_chain status fields must be set to 'pending' (execution happens separately).\n"
         "- Monetary values should be in PKR.\n"
+        "- Every action step MUST include: budget_pkr (integer, 0 if no spend), deadline (string), "
+        "urgency (HIGH|MEDIUM|LOW), rate_limit (string describing API/dispatch quota or 'None' if internal), "
+        "and feasibility (FEASIBLE|MODIFIED|INFEASIBLE — assess against the budget and rate limit).\n"
+        "- The constraint field stays as a 1-line human-readable summary of the structured fields above.\n"
+        "- If a step would violate its budget or rate limit, set feasibility to MODIFIED and reduce scope, "
+        "or INFEASIBLE and skip — never silently violate a constraint.\n"
         "- Be specific, analytical, and data-driven in your assessments."
     )
 
@@ -313,7 +339,12 @@ def _build_user_content(sources: dict) -> str:
                 "step": 1,
                 "action": "string (specific actionable step)",
                 "status": "pending",
-                "constraint": "string (time, budget, or operational constraint)",
+                "constraint": "string (1-line summary combining budget + deadline + rate limit)",
+                "budget_pkr": 0,
+                "deadline": "string (e.g. '2 hours', '24 hours', 'Continuous')",
+                "urgency": "HIGH|MEDIUM|LOW",
+                "rate_limit": "string (API quota / dispatch limit / 'None' if internal)",
+                "feasibility": "FEASIBLE|MODIFIED|INFEASIBLE",
                 "rationale": "string (why this step, why this priority)"
             }
         ],

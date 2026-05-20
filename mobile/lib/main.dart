@@ -98,7 +98,7 @@ class BaseeraApp extends StatelessWidget {
       displayColor: BaseeraColors.textPrimary,
     );
 
-    final colorScheme = const ColorScheme.dark(
+    const colorScheme = ColorScheme.dark(
       primary: BaseeraColors.primary,
       onPrimary: Colors.white,
       secondary: BaseeraColors.gold,

@@ -789,8 +789,8 @@ class OutcomeScreen extends StatelessWidget {
         fontWeight: pw.FontWeight.bold,
         color: primary,
       );
-      final labelStyle = pw.TextStyle(fontSize: 9, color: muted);
-      final bodyStyle = pw.TextStyle(fontSize: 10, color: body);
+      const labelStyle = pw.TextStyle(fontSize: 9, color: muted);
+      const bodyStyle = pw.TextStyle(fontSize: 10, color: body);
       final boldBody = pw.TextStyle(
           fontSize: 10, fontWeight: pw.FontWeight.bold, color: body);
 
@@ -822,7 +822,7 @@ class OutcomeScreen extends StatelessWidget {
                         pw.SizedBox(height: 2),
                         pw.Text(
                           'AI-Powered Supply Chain Analysis',
-                          style: pw.TextStyle(
+                          style: const pw.TextStyle(
                               fontSize: 9, color: muted),
                         ),
                       ],
@@ -839,7 +839,7 @@ class OutcomeScreen extends StatelessWidget {
                         ),
                         pw.Text(
                           '${now.day}/${now.month}/${now.year}  ${now.hour}:${now.minute.toString().padLeft(2, '0')}',
-                          style: pw.TextStyle(fontSize: 8, color: muted),
+                          style: const pw.TextStyle(fontSize: 8, color: muted),
                         ),
                       ],
                     ),
@@ -855,7 +855,7 @@ class OutcomeScreen extends StatelessWidget {
                 pw.Text('OUTCOME SUMMARY', style: headingStyle),
                 pw.SizedBox(height: 6),
                 pw.Container(
-                  decoration: pw.BoxDecoration(
+                  decoration: const pw.BoxDecoration(
                     border: pw.Border(
                       left: pw.BorderSide(color: success, width: 3),
                     ),
@@ -938,7 +938,7 @@ class OutcomeScreen extends StatelessWidget {
                     padding: const pw.EdgeInsets.only(bottom: 10),
                     child: pw.Container(
                       padding: const pw.EdgeInsets.all(10),
-                      decoration: pw.BoxDecoration(
+                      decoration: const pw.BoxDecoration(
                         border: pw.Border(
                           left: pw.BorderSide(color: error, width: 3),
                           top: pw.BorderSide(color: divider, width: 0.5),
@@ -968,7 +968,7 @@ class OutcomeScreen extends StatelessWidget {
                           ),
                           pw.Text(
                             'Winner: ${c.credibilityWinner}',
-                            style: pw.TextStyle(
+                            style: const pw.TextStyle(
                                 fontSize: 9, color: success),
                           ),
                         ],
@@ -1131,9 +1131,9 @@ class OutcomeScreen extends StatelessWidget {
           children: [
             pw.Text(
               label,
-              style: pw.TextStyle(
+              style: const pw.TextStyle(
                   fontSize: 7,
-                  color: const PdfColor.fromInt(0xFFA89BC2)),
+                  color: PdfColor.fromInt(0xFFA89BC2)),
             ),
             pw.SizedBox(height: 2),
             pw.Text(

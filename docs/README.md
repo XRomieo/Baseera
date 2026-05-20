@@ -156,6 +156,38 @@ A **fallback response** is hardcoded in [agents/gemini_client.py](../backend/age
 
 ---
 
+## Constraint-Based Decision-Making
+
+Each action in the chain carries five structured constraint fields which Gemini fills and the UI renders as colored chips:
+
+| Field | Example | UI Chip |
+|---|---|---|
+| `budget_pkr` | `500000` | Gold `LucideIcons.banknote` |
+| `deadline` | `"4 hours"` | Purple `LucideIcons.clock` |
+| `urgency` | `HIGH` / `MEDIUM` / `LOW` | Red / Orange / Green `LucideIcons.zap` |
+| `rate_limit` | `"SMS gateway 100 msg/min"` | Grey `LucideIcons.gauge` |
+| `feasibility` | `FEASIBLE` / `MODIFIED` / `INFEASIBLE` | Green check / Orange triangle / Red X |
+
+The system prompt instructs the agent to never silently violate a constraint — it must either downgrade `feasibility` to `MODIFIED` (reduce scope) or `INFEASIBLE` (skip and explain). This is the explicit constraint-based decision layer required by Challenge 1.
+
+---
+
+## Baseline Comparison
+
+| Aspect | Rule-Based Baseline | Baseera (Agentic) |
+|---|---|---|
+| Contradiction detection | None — trusts structured CSV | 2 cross-source conflicts surfaced |
+| Credibility scoring | None | HIGH / MEDIUM / LOW / STALE per source |
+| Action chain | None ("stock OK") | 4 steps with budget + deadline + urgency + rate-limit |
+| Failure recovery | Crash on Step 2 API timeout | Auto-retry via email fallback channel |
+| Constraint enforcement | None | FEASIBLE / MODIFIED / INFEASIBLE assessed per step |
+| Stockout risk outcome | 87% (unchanged) | 12% (resolved) |
+| Revenue at risk | PKR 87,050/day lost | PKR 261,150 saved over 3 days |
+
+The baseline cannot pass the central test of Challenge 1: distinguishing which of two contradicting sources to trust. Trusting "the most structured input" is exactly the failure mode the scenario is designed to expose.
+
+---
+
 ## Action Chain Simulation
 
 Steps execute sequentially via `POST /api/execute-step`:

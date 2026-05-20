@@ -180,11 +180,11 @@ class SourcesScreen extends StatelessWidget {
           const SizedBox(height: 10),
           ClipRRect(
             borderRadius: BorderRadius.circular(4),
-            child: LinearProgressIndicator(
+            child: const LinearProgressIndicator(
               value: 1.0,
               backgroundColor: BaseeraColors.border,
               valueColor:
-                  const AlwaysStoppedAnimation(BaseeraColors.success),
+                  AlwaysStoppedAnimation(BaseeraColors.success),
               minHeight: 6,
             ),
           ),

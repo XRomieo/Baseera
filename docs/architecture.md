@@ -334,12 +334,15 @@ async def execute_step(step_number: int):
     # second call: succeed
 ```
 
-### 4. Debug/Release URL Split (Mobile)
+### 4. Constraint-Attached Actions
+Each step in `action_chain` ships with five structured constraint fields (`budget_pkr`, `deadline`, `urgency`, `rate_limit`, `feasibility`) which Gemini must populate. The system instruction forbids silent constraint violations — infeasible steps must downgrade their `feasibility` to `MODIFIED` or `INFEASIBLE` rather than execute and breach. The Flutter `ActionStepModel` carries these through to the UI as colored chips.
+
+### 5. Debug/Release URL Split (Mobile)
 - Debug builds bake `http://10.0.2.2:8000` into the Dart binary.
 - Release builds read `BASEERA_API_URL` from `mobile/.env` (bundled as a Flutter asset, loaded by `flutter_dotenv` at startup).
 - `.env` is gitignored; `.env.example` is the template + setup guide.
 
-### 5. Performance Discipline (Mobile)
+### 6. Performance Discipline (Mobile)
 - No `AnimatedBuilder` wrapping subtrees that include animated `BoxShadow.blurRadius` (blur is GPU-expensive every frame).
 - `IntrinsicHeight` only when necessary; left-accent stripes use `Stack` + `Positioned` instead of `Row(crossAxisAlignment: stretch)` + `IntrinsicHeight`.
 - One-shot entrance animations via `flutter_animate` (fade/slide finish in ~600 ms then stop).

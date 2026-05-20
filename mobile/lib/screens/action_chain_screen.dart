@@ -302,24 +302,8 @@ class _ActionChainScreenState extends State<ActionChainScreen>
                 height: 1.4,
               ),
             ),
-            const SizedBox(height: 8),
-            if (step.constraint.isNotEmpty)
-              Row(
-                children: [
-                  const Icon(LucideIcons.info,
-                      size: 13, color: BaseeraColors.textSecondary),
-                  const SizedBox(width: 6),
-                  Expanded(
-                    child: Text(
-                      step.constraint,
-                      style: GoogleFonts.outfit(
-                        fontSize: 12,
-                        color: BaseeraColors.textSecondary,
-                      ),
-                    ),
-                  ),
-                ],
-              ),
+            const SizedBox(height: 10),
+            _buildConstraintChips(step),
             if (step.status == StepStatus.failed && step.error != null) ...[
               const SizedBox(height: 10),
               _noteBox(
@@ -372,6 +356,140 @@ class _ActionChainScreenState extends State<ActionChainScreen>
       ),
     );
   }
+
+  Widget _buildConstraintChips(ActionStepModel step) {
+    final chips = <Widget>[];
+
+    final urgency = step.urgency?.toUpperCase();
+    if (urgency != null && urgency.isNotEmpty) {
+      Color uColor = BaseeraColors.textSecondary;
+      if (urgency == 'HIGH') {
+        uColor = BaseeraColors.error;
+      } else if (urgency == 'MEDIUM') {
+        uColor = BaseeraColors.warning;
+      } else if (urgency == 'LOW') {
+        uColor = BaseeraColors.success;
+      }
+      chips.add(_constraintChip(
+        icon: LucideIcons.zap,
+        label: urgency,
+        color: uColor,
+      ));
+    }
+
+    if (step.budgetPkr != null) {
+      final b = step.budgetPkr!;
+      final label = b == 0 ? 'No spend' : 'PKR ${_formatPkr(b)}';
+      chips.add(_constraintChip(
+        icon: LucideIcons.banknote,
+        label: label,
+        color: BaseeraColors.goldGlow,
+      ));
+    }
+
+    if (step.deadline != null && step.deadline!.isNotEmpty) {
+      chips.add(_constraintChip(
+        icon: LucideIcons.clock,
+        label: step.deadline!,
+        color: BaseeraColors.primaryGlow,
+      ));
+    }
+
+    if (step.rateLimit != null &&
+        step.rateLimit!.isNotEmpty &&
+        step.rateLimit!.toLowerCase() != 'none' &&
+        !step.rateLimit!.toLowerCase().startsWith('none —') &&
+        !step.rateLimit!.toLowerCase().startsWith('none -')) {
+      chips.add(_constraintChip(
+        icon: LucideIcons.gauge,
+        label: _truncate(step.rateLimit!, 32),
+        color: BaseeraColors.textSecondary,
+      ));
+    }
+
+    final feas = step.feasibility?.toUpperCase();
+    if (feas != null && feas.isNotEmpty) {
+      Color fColor = BaseeraColors.success;
+      IconData fIcon = LucideIcons.checkCircle;
+      if (feas == 'MODIFIED') {
+        fColor = BaseeraColors.warning;
+        fIcon = LucideIcons.alertTriangle;
+      } else if (feas == 'INFEASIBLE') {
+        fColor = BaseeraColors.error;
+        fIcon = LucideIcons.xCircle;
+      }
+      chips.add(_constraintChip(icon: fIcon, label: feas, color: fColor));
+    }
+
+    if (chips.isEmpty && step.constraint.isNotEmpty) {
+      return Row(
+        children: [
+          const Icon(LucideIcons.info,
+              size: 13, color: BaseeraColors.textSecondary),
+          const SizedBox(width: 6),
+          Expanded(
+            child: Text(
+              step.constraint,
+              style: GoogleFonts.outfit(
+                fontSize: 12,
+                color: BaseeraColors.textSecondary,
+              ),
+            ),
+          ),
+        ],
+      );
+    }
+
+    return Wrap(
+      spacing: 6,
+      runSpacing: 6,
+      children: chips,
+    );
+  }
+
+  Widget _constraintChip({
+    required IconData icon,
+    required String label,
+    required Color color,
+  }) {
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+      decoration: BoxDecoration(
+        color: color.withValues(alpha: 0.12),
+        borderRadius: BorderRadius.circular(8),
+        border: Border.all(color: color.withValues(alpha: 0.35), width: 0.8),
+      ),
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Icon(icon, size: 11, color: color),
+          const SizedBox(width: 4),
+          Text(
+            label,
+            style: GoogleFonts.outfit(
+              fontSize: 10,
+              fontWeight: FontWeight.w600,
+              color: color,
+              letterSpacing: 0.2,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  String _formatPkr(int value) {
+    final s = value.toString();
+    final buf = StringBuffer();
+    for (int i = 0; i < s.length; i++) {
+      if (i > 0 && (s.length - i) % 3 == 0) buf.write(',');
+      buf.write(s[i]);
+    }
+    return buf.toString();
+  }
+
+  String _truncate(String s, int max) =>
+      s.length > max ? '${s.substring(0, max - 1)}…' : s;
 
   Widget _noteBox({
     required IconData icon,

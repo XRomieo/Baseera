@@ -7,6 +7,11 @@ class ActionStepModel {
   final StepStatus status;
   final String constraint;
   final String rationale;
+  final int? budgetPkr;
+  final String? deadline;
+  final String? urgency;
+  final String? rateLimit;
+  final String? feasibility;
   final String? error;
   final String? completionNote;
   final int? latencyMs;
@@ -18,6 +23,11 @@ class ActionStepModel {
     required this.status,
     required this.constraint,
     required this.rationale,
+    this.budgetPkr,
+    this.deadline,
+    this.urgency,
+    this.rateLimit,
+    this.feasibility,
     this.error,
     this.completionNote,
     this.latencyMs,
@@ -30,6 +40,11 @@ class ActionStepModel {
     StepStatus? status,
     String? constraint,
     String? rationale,
+    int? budgetPkr,
+    String? deadline,
+    String? urgency,
+    String? rateLimit,
+    String? feasibility,
     String? error,
     String? completionNote,
     int? latencyMs,
@@ -41,6 +56,11 @@ class ActionStepModel {
       status: status ?? this.status,
       constraint: constraint ?? this.constraint,
       rationale: rationale ?? this.rationale,
+      budgetPkr: budgetPkr ?? this.budgetPkr,
+      deadline: deadline ?? this.deadline,
+      urgency: urgency ?? this.urgency,
+      rateLimit: rateLimit ?? this.rateLimit,
+      feasibility: feasibility ?? this.feasibility,
       error: error ?? this.error,
       completionNote: completionNote ?? this.completionNote,
       latencyMs: latencyMs ?? this.latencyMs,
@@ -49,12 +69,25 @@ class ActionStepModel {
   }
 
   factory ActionStepModel.fromJson(Map<String, dynamic> json) {
+    int? parseBudget(dynamic v) {
+      if (v == null) return null;
+      if (v is int) return v;
+      if (v is num) return v.toInt();
+      if (v is String) return int.tryParse(v.replaceAll(RegExp(r'[^0-9]'), ''));
+      return null;
+    }
+
     return ActionStepModel(
       step: json['step'] ?? 0,
       action: json['action'] ?? '',
       status: StepStatus.fromString(json['status'] ?? 'pending'),
       constraint: json['constraint'] ?? '',
       rationale: json['rationale'] ?? '',
+      budgetPkr: parseBudget(json['budget_pkr']),
+      deadline: json['deadline'] as String?,
+      urgency: json['urgency'] as String?,
+      rateLimit: json['rate_limit'] as String?,
+      feasibility: json['feasibility'] as String?,
     );
   }
 
